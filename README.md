@@ -5,7 +5,7 @@
 
 ## 사용
 
-GitHub Pages: https://byiryu.github.io/weather-outfit-color-tool/
+GitHub Pages: https://byiryu.github.io/color-palette-viewer/
 
 ## 기능
 

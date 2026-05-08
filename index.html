@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <title>weather-outfit V4-1 색상 시드 시각화</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      padding: 24px;
+      background: #fafafa;
+      color: #222;
+    }
+    h1 { font-size: 20px; margin-bottom: 6px; }
+    .subtitle { color: #888; margin-bottom: 20px; font-size: 13px; }
+    .filters {
+      background: white;
+      padding: 14px 16px;
+      border-radius: 8px;
+      margin-bottom: 20px;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+    }
+    .filter-group { display: flex; align-items: center; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
+    .filter-group:last-child { margin-bottom: 0; }
+    .filter-label { font-weight: 600; font-size: 13px; min-width: 70px; color: #444; }
+    .btn {
+      padding: 4px 10px;
+      border: 1px solid #ddd;
+      background: white;
+      cursor: pointer;
+      border-radius: 14px;
+      font-size: 12px;
+      transition: all 0.15s;
+    }
+    .btn:hover { background: #f5f5f5; }
+    .btn.active { background: #222; color: white; border-color: #222; }
+    .stats { color: #666; font-size: 12px; margin-bottom: 10px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+      gap: 14px;
+    }
+    .card {
+      background: white;
+      border-radius: 10px;
+      overflow: hidden;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.06);
+      transition: transform 0.15s;
+    }
+    .card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(0,0,0,0.08); }
+    .swatch {
+      height: 140px;
+      position: relative;
+    }
+    .swatch-label {
+      position: absolute;
+      bottom: 8px;
+      left: 10px;
+      background: rgba(0,0,0,0.5);
+      color: white;
+      font-family: monospace;
+      font-size: 11px;
+      padding: 2px 6px;
+      border-radius: 3px;
+    }
+    .info { padding: 12px; }
+    .name { font-weight: 700; font-size: 15px; }
+    .name-en { color: #999; font-size: 12px; margin-top: 1px; }
+    .source { font-size: 10px; color: #aaa; margin-top: 6px; font-family: monospace; }
+    .tags { margin-top: 10px; display: flex; flex-wrap: wrap; gap: 3px; }
+    .tag {
+      display: inline-block;
+      padding: 2px 7px;
+      border-radius: 10px;
+      font-size: 10px;
+      line-height: 1.4;
+    }
+    .tag-warmth-warm { background: #ffeae0; color: #b8500a; }
+    .tag-warmth-cool { background: #e0eaff; color: #1a4f99; }
+    .tag-warmth-neutral { background: #f0f0f0; color: #555; }
+    .tag-tone { background: #ececec; color: #555; }
+    .tag-role { background: #fff3cd; color: #806000; }
+    .tag-weather { background: #e3f2fd; color: #0d47a1; }
+    .tag-temp { background: #fff3e0; color: #b25500; }
+    .tag-season { background: #f1f8e9; color: #2e7d32; }
+    .tag-scheme { background: #f3e5f5; color: #6a1b9a; }
+    .section-header { font-size: 11px; color: #888; margin-top: 8px; margin-bottom: 4px; text-transform: uppercase; letter-spacing: 0.5px; }
+  </style>
+</head>
+<body>
+  <h1>weather-outfit V4-1 색상 시드 시각화</h1>
+  <div class="subtitle">Batch 1: Pantone 36색 · 필터로 날씨/기온/계절별 추천 색 확인</div>
+
+  <div class="filters">
+    <div class="filter-group">
+      <span class="filter-label">날씨</span>
+      <button class="btn active" data-filter="weather" data-value="all">전체</button>
+      <button class="btn" data-filter="weather" data-value="sunny">☀️ 맑음</button>
+      <button class="btn" data-filter="weather" data-value="cloudy">☁️ 흐림</button>
+      <button class="btn" data-filter="weather" data-value="rainy">🌧 비</button>
+      <button class="btn" data-filter="weather" data-value="snowy">❄️ 눈</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">기온</span>
+      <button class="btn active" data-filter="temp" data-value="all">전체</button>
+      <button class="btn" data-filter="temp" data-value="cold">cold ≤0°C</button>
+      <button class="btn" data-filter="temp" data-value="cool">cool 1~12°C</button>
+      <button class="btn" data-filter="temp" data-value="mild">mild 13~22°C</button>
+      <button class="btn" data-filter="temp" data-value="warm">warm 23~28°C</button>
+      <button class="btn" data-filter="temp" data-value="hot">hot 29°C+</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">계절</span>
+      <button class="btn active" data-filter="season" data-value="all">전체</button>
+      <button class="btn" data-filter="season" data-value="spring">봄</button>
+      <button class="btn" data-filter="season" data-value="summer">여름</button>
+      <button class="btn" data-filter="season" data-value="autumn">가을</button>
+      <button class="btn" data-filter="season" data-value="winter">겨울</button>
+    </div>
+    <div class="filter-group">
+      <span class="filter-label">역할</span>
+      <button class="btn active" data-filter="role" data-value="all">전체</button>
+      <button class="btn" data-filter="role" data-value="base">베이스</button>
+      <button class="btn" data-filter="role" data-value="neutral">뉴트럴</button>
+      <button class="btn" data-filter="role" data-value="accent">포인트</button>
+    </div>
+  </div>
+
+  <div class="stats" id="stats"></div>
+  <div class="grid" id="grid"></div>
+
+  <script>
+    const colors = [
+      {"hex": "#F0EEE9", "name_ko": "클라우드 댄서", "name_en": "Cloud Dancer", "source": "pantone_coty_2026", "warmth": "warm", "tone": "very_light", "role": "neutral", "weather_fit": ["sunny", "cloudy", "snowy"], "temp_fit": ["cool", "mild", "warm", "hot"], "season_fit": ["spring", "summer", "winter"], "scheme_fit": ["neutral", "tonal"]},
+      {"hex": "#A47864", "name_ko": "모카 무스", "name_en": "Mocha Mousse", "source": "pantone_coty_2025", "warmth": "warm", "tone": "medium", "role": "neutral", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["tonal", "neutral"]},
+      {"hex": "#FFBE98", "name_ko": "피치 퍼즈", "name_en": "Peach Fuzz", "source": "pantone_coty_2024", "warmth": "warm", "tone": "light", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent", "tonal"]},
+      {"hex": "#BB2649", "name_ko": "비바 마젠타", "name_en": "Viva Magenta", "source": "pantone_coty_2023", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["autumn", "winter"], "scheme_fit": ["accent", "contrast"]},
+      {"hex": "#6667AB", "name_ko": "베리 페리", "name_en": "Very Peri", "source": "pantone_coty_2022", "warmth": "cool", "tone": "medium", "role": "accent", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["spring", "autumn", "winter"], "scheme_fit": ["accent", "contrast"]},
+      {"hex": "#929292", "name_ko": "얼티밋 그레이", "name_en": "Ultimate Gray", "source": "pantone_coty_2021", "warmth": "neutral", "tone": "medium", "role": "neutral", "weather_fit": ["cloudy", "rainy", "snowy"], "temp_fit": ["cool", "mild", "warm"], "season_fit": ["autumn", "winter"], "scheme_fit": ["mono", "tonal", "neutral"]},
+      {"hex": "#F9E300", "name_ko": "일루미네이팅", "name_en": "Illuminating", "source": "pantone_coty_2021", "warmth": "warm", "tone": "light", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["warm", "hot"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#0F4C81", "name_ko": "클래식 블루", "name_en": "Classic Blue", "source": "pantone_coty_2020", "warmth": "cool", "tone": "dark", "role": "base", "weather_fit": ["cloudy", "rainy", "snowy"], "temp_fit": ["cold", "cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["base", "mono", "tonal", "contrast"]},
+      {"hex": "#F56A6A", "name_ko": "리빙 코럴", "name_en": "Living Coral", "source": "pantone_coty_2019", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent", "contrast"]},
+      {"hex": "#5D2E46", "name_ko": "울트라 바이올렛", "name_en": "Ultra Violet", "source": "pantone_coty_2018", "warmth": "cool", "tone": "dark", "role": "accent", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["mono", "tonal", "accent"]},
+      {"hex": "#88B04B", "name_ko": "그리너리", "name_en": "Greenery", "source": "pantone_coty_2017", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#F7CAC9", "name_ko": "로즈 쿼츠", "name_en": "Rose Quartz", "source": "pantone_coty_2016", "warmth": "warm", "tone": "light", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#92A8D1", "name_ko": "세레니티", "name_en": "Serenity", "source": "pantone_coty_2016", "warmth": "cool", "tone": "light", "role": "accent", "weather_fit": ["cloudy"], "temp_fit": ["cool", "mild"], "season_fit": ["spring", "summer"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#5D3954", "name_ko": "마르살라", "name_en": "Marsala", "source": "pantone_coty_2015", "warmth": "warm", "tone": "dark", "role": "accent", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["mono", "tonal", "accent"]},
+      {"hex": "#D57AA5", "name_ko": "래디언트 오키드", "name_en": "Radiant Orchid", "source": "pantone_coty_2014", "warmth": "cool", "tone": "medium", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#008A7C", "name_ko": "에메랄드", "name_en": "Emerald", "source": "pantone_coty_2013", "warmth": "cool", "tone": "dark", "role": "accent", "weather_fit": ["cloudy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["accent", "contrast"]},
+      {"hex": "#D94032", "name_ko": "탠저린 탱고", "name_en": "Tangerine Tango", "source": "pantone_coty_2012", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["autumn", "winter"], "scheme_fit": ["accent"]},
+      {"hex": "#D94F70", "name_ko": "허니서클", "name_en": "Honeysuckle", "source": "pantone_coty_2011", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#45B5AA", "name_ko": "터쿼이즈", "name_en": "Turquoise", "source": "pantone_coty_2010", "warmth": "cool", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["warm", "hot"], "season_fit": ["summer"], "scheme_fit": ["accent"]},
+      {"hex": "#7A8450", "name_ko": "아카시아", "name_en": "Acacia", "source": "pantone_ss26_nyfw", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["summer", "autumn"], "scheme_fit": ["neutral", "tonal"]},
+      {"hex": "#3F5D7D", "name_ko": "마리나", "name_en": "Marina", "source": "pantone_ss26_nyfw", "warmth": "cool", "tone": "dark", "role": "base", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["base", "mono", "tonal"]},
+      {"hex": "#F38B5C", "name_ko": "머스크멜론", "name_en": "Muskmelon", "source": "pantone_ss26_nyfw", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#5C6F8F", "name_ko": "알렉산드라이트", "name_en": "Alexandrite", "source": "pantone_ss26_nyfw", "warmth": "cool", "tone": "medium", "role": "neutral", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["neutral", "tonal"]},
+      {"hex": "#D14D44", "name_ko": "라바 폴스", "name_en": "Lava Falls", "source": "pantone_ss26_nyfw", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["autumn", "winter"], "scheme_fit": ["accent"]},
+      {"hex": "#C9A8C4", "name_ko": "버니시드 라일락", "name_en": "Burnished Lilac", "source": "pantone_ss26_lfw", "warmth": "cool", "tone": "light", "role": "accent", "weather_fit": ["cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#C24268", "name_ko": "티베리", "name_en": "Teaberry", "source": "pantone_ss26_lfw", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "autumn"], "scheme_fit": ["accent"]},
+      {"hex": "#F7E08C", "name_ko": "페일 바나나", "name_en": "Pale Banana", "source": "pantone_ss26_lfw", "warmth": "warm", "tone": "light", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["warm", "hot"], "season_fit": ["spring", "summer"], "scheme_fit": ["accent"]},
+      {"hex": "#E8853A", "name_ko": "만다린 오렌지", "name_en": "Mandarin Orange", "source": "pantone_ss26_lfw", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["sunny"], "temp_fit": ["mild", "warm"], "season_fit": ["autumn", "winter"], "scheme_fit": ["accent"]},
+      {"hex": "#893849", "name_ko": "아마란스", "name_en": "Amaranth", "source": "pantone_ss26_lfw", "warmth": "warm", "tone": "dark", "role": "accent", "weather_fit": ["cloudy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#F4B5C0", "name_ko": "티클드 핑크", "name_en": "Tickled Pink", "source": "pantone_ss26_lfw", "warmth": "warm", "tone": "light", "role": "accent", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "summer"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#3C2A1E", "name_ko": "커피 빈", "name_en": "Coffee Bean", "source": "pantone_ss26_neutral", "warmth": "warm", "tone": "very_dark", "role": "base", "weather_fit": ["cloudy", "rainy", "snowy"], "temp_fit": ["cold", "cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["base", "mono", "tonal"]},
+      {"hex": "#F2EFE7", "name_ko": "화이트 오닉스", "name_en": "White Onyx", "source": "pantone_ss26_neutral", "warmth": "neutral", "tone": "very_light", "role": "neutral", "weather_fit": ["sunny", "cloudy", "snowy"], "temp_fit": ["cool", "mild", "warm", "hot"], "season_fit": ["spring", "summer", "winter"], "scheme_fit": ["neutral", "tonal"]},
+      {"hex": "#9E5A6F", "name_ko": "로도나이트", "name_en": "Rhodonite", "source": "pantone_ss26_neutral", "warmth": "warm", "tone": "medium", "role": "accent", "weather_fit": ["cloudy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["tonal", "accent"]},
+      {"hex": "#E8DCC8", "name_ko": "앙고라", "name_en": "Angora", "source": "pantone_ss26_neutral", "warmth": "warm", "tone": "very_light", "role": "neutral", "weather_fit": ["sunny", "cloudy"], "temp_fit": ["mild", "warm"], "season_fit": ["spring", "autumn"], "scheme_fit": ["neutral", "tonal"]},
+      {"hex": "#5C6A4A", "name_ko": "시카모어", "name_en": "Sycamore", "source": "pantone_ss26_neutral", "warmth": "warm", "tone": "dark", "role": "base", "weather_fit": ["cloudy", "rainy"], "temp_fit": ["cool", "mild"], "season_fit": ["autumn", "winter"], "scheme_fit": ["base", "mono"]},
+      {"hex": "#A8B095", "name_ko": "세이지 그린", "name_en": "Sage Green", "source": "pantone_ss26_neutral", "warmth": "cool", "tone": "medium", "role": "neutral", "weather_fit": ["cloudy"], "temp_fit": ["cool", "mild", "warm"], "season_fit": ["spring", "autumn"], "scheme_fit": ["neutral", "tonal"]}
+    ];
+
+    const filters = { weather: 'all', temp: 'all', season: 'all', role: 'all' };
+
+    function applyFilters() {
+      return colors.filter(c => {
+        if (filters.weather !== 'all' && !c.weather_fit.includes(filters.weather)) return false;
+        if (filters.temp !== 'all' && !c.temp_fit.includes(filters.temp)) return false;
+        if (filters.season !== 'all' && !c.season_fit.includes(filters.season)) return false;
+        if (filters.role !== 'all' && c.role !== filters.role) return false;
+        return true;
+      });
+    }
+
+    function getContrastColor(hex) {
+      const r = parseInt(hex.slice(1,3), 16);
+      const g = parseInt(hex.slice(3,5), 16);
+      const b = parseInt(hex.slice(5,7), 16);
+      const brightness = (r * 299 + g * 587 + b * 114) / 1000;
+      return brightness > 128 ? '#000' : '#fff';
+    }
+
+    function render() {
+      const filtered = applyFilters();
+      document.getElementById('stats').textContent = `${filtered.length}색 표시 (전체 ${colors.length}색)`;
+      const grid = document.getElementById('grid');
+      grid.innerHTML = filtered.map(c => `
+        <div class="card">
+          <div class="swatch" style="background: ${c.hex};">
+            <div class="swatch-label">${c.hex}</div>
+          </div>
+          <div class="info">
+            <div class="name">${c.name_ko}</div>
+            <div class="name-en">${c.name_en}</div>
+            <div class="tags">
+              <span class="tag tag-warmth-${c.warmth}">${c.warmth}</span>
+              <span class="tag tag-tone">${c.tone}</span>
+              <span class="tag tag-role">${c.role}</span>
+            </div>
+            <div class="section-header">날씨</div>
+            <div class="tags">
+              ${c.weather_fit.map(w => `<span class="tag tag-weather">${w}</span>`).join('')}
+            </div>
+            <div class="section-header">기온</div>
+            <div class="tags">
+              ${c.temp_fit.map(t => `<span class="tag tag-temp">${t}</span>`).join('')}
+            </div>
+            <div class="section-header">계절</div>
+            <div class="tags">
+              ${c.season_fit.map(s => `<span class="tag tag-season">${s}</span>`).join('')}
+            </div>
+            <div class="section-header">스킴</div>
+            <div class="tags">
+              ${c.scheme_fit.map(sc => `<span class="tag tag-scheme">${sc}</span>`).join('')}
+            </div>
+            <div class="source">${c.source}</div>
+          </div>
+        </div>
+      `).join('');
+    }
+
+    document.querySelectorAll('.btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const filter = btn.dataset.filter;
+        const value = btn.dataset.value;
+        document.querySelectorAll(`.btn[data-filter="${filter}"]`).forEach(b => b.classList.remove('active'));
+        btn.classList.add('active');
+        filters[filter] = value;
+        render();
+      });
+    });
+
+    render();
+  </script>
+</body>
+</html>

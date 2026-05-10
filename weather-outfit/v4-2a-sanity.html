@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit V4-2a Sanity — 매트릭스+Opus 추천 8 케이스</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #fafafa;
+    color: #1a1a1a;
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  h2 { font-size: 20px; margin: 24px 0 12px; }
+  .meta { color: #666; font-size: 14px; }
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .legend strong { display: block; margin-bottom: 8px; font-size: 15px; }
+  .cases-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(540px, 1fr));
+    gap: 20px;
+  }
+  .case {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .case-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 10px;
+    margin-bottom: 14px;
+  }
+  .case-id {
+    font-size: 16px;
+    font-weight: 700;
+  }
+  .case-tags { font-size: 13px; color: #666; }
+  .case-input {
+    background: #f8f8f8;
+    border-radius: 6px;
+    padding: 10px 12px;
+    margin-bottom: 14px;
+    font-size: 13px;
+    color: #333;
+  }
+  .case-input b { color: #1a1a1a; }
+  .scheme-mood {
+    display: inline-block;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 12px;
+    margin-bottom: 12px;
+  }
+  .items {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 10px 14px;
+    align-items: center;
+  }
+  .role {
+    font-size: 12px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .swatch {
+    width: 60px;
+    height: 60px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .swatch.empty {
+    background: repeating-linear-gradient(
+      45deg, #f0f0f0 0 8px, #fff 8px 16px
+    );
+    border: 1px dashed #ccc;
+  }
+  .item-meta { font-size: 13px; }
+  .item-meta .name { font-weight: 600; }
+  .item-meta .hex { color: #888; font-family: ui-monospace, "SF Mono", monospace; font-size: 12px; }
+  .item-meta .clothing { color: #444; margin-top: 2px; }
+  .empty-note { color: #999; font-style: italic; font-size: 13px; }
+  .reasoning {
+    margin-top: 14px;
+    padding: 10px 12px;
+    background: #f5f7fa;
+    border-left: 3px solid #4a90e2;
+    border-radius: 4px;
+    font-size: 13px;
+    color: #444;
+  }
+  .reasoning b { color: #1a1a1a; }
+  .judgment {
+    margin-top: 36px;
+    padding: 20px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ffe082;
+  }
+  .judgment strong { display: block; margin-bottom: 6px; font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>weather-outfit V4-2a Sanity Check</h1>
+    <p class="meta">매트릭스+Opus 추천 엔진 sanity — 8 케이스 (성별 2 × 계절 4) · 2026-05-10</p>
+  </header>
+
+  <div class="legend">
+    <strong>검증 목적</strong>
+    HSL 매트릭스(5 테마 × 4 계절) + Claude(Opus 4.7) + few-shot 가이드 조합이
+    <b>V4-1 수준 일관 품질</b>을 내는지 확인. 8 케이스에 대해 사용자 시각 판단 (PASS 기준 8/10).
+    <br><br>
+    <strong>스케일</strong> · 5 테마: 오리지널 / 모노크롬 / 팝 / 파스텔 / 사이버펑크
+    <br>
+    <strong>케이스 분포</strong> · 모든 테마 + 모든 계절 + 다양한 날씨 + 성별 양쪽
+    <br>
+    <strong>FAIL 시</strong> 매트릭스 정교화 또는 프롬프트 보강 후 1회 재시도. 2회 FAIL 시 시나리오 D (자유 추천) 검토.
+  </div>
+
+  <h2>Cases</h2>
+  <div class="cases-grid" id="cases"></div>
+
+  <div class="judgment">
+    <strong>판단 기준</strong>
+    각 케이스를 (1) 시각적 조화 (2) 날씨·계절 적합성 (3) 테마 정체성 충실도 기준으로 평가.
+    <b>8/10 PASS</b> = 8개 중 7개 이상 만족. FAIL 케이스는 사유와 함께 메모 후 매트릭스/프롬프트 개선.
+  </div>
+</div>
+
+<script>
+const data = {"_meta": {"version": "v4-2a-1", "engine": "Opus 4.7 (1M context) — V4-2a sanity surrogate for Haiku 4.5", "matrix": "scripts/weather-outfit/v4-2a/matrix.json", "system_prompt": "scripts/weather-outfit/v4-2a/system-prompt.md", "purpose": "8 케이스 추천 결과 — 본인 시각 판단 PASS/FAIL 기준 8/10", "date": "2026-05-10"}, "cases": [{"case_id": 1, "input": {"season": "spring", "weather": {"temp_celsius": 18, "sky": "clear", "precipitation": "none", "wind_ms": 3, "pm": "good"}, "user": {"gender": "M", "theme": "original"}}, "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "봄 따뜻함", "season": "spring", "weather_summary": "18°C 맑음", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null, "_note": "18°C — 외투 미적용"}, {"role": "top", "colorHex": "F8F8F2", "colorName": "오프 화이트", "clothingType": "면 긴팔티"}, {"role": "bottom", "colorHex": "2C4E80", "colorName": "딥 인디고", "clothingType": "청바지"}, {"role": "shoes", "colorHex": "D2B48C", "colorName": "탠 베이지", "clothingType": "캔버스화"}], "_reasoning": "봄 18°C 맑음 + original → tone-on-tone (안전 무난). neutral_light 상의 + dark_anchor 하의 + warm_mid 신발. 클래식 봄 조합."}}, {"case_id": 2, "input": {"season": "spring", "weather": {"temp_celsius": 18, "sky": "clear", "precipitation": "none", "wind_ms": 3, "pm": "good"}, "user": {"gender": "F", "theme": "original"}}, "output": {"scheme": "base-accent", "scheme_label": "베이스+포인트", "mood_tag": "봄 따뜻함", "season": "spring", "weather_summary": "18°C 맑음", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null, "_note": "18°C — 외투 미적용"}, {"role": "top", "colorHex": "F4D5BC", "colorName": "피치 크림", "clothingType": "면 긴팔티"}, {"role": "bottom", "colorHex": "E8DDD0", "colorName": "샌드 베이지", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "8FB89E", "colorName": "세이지 그린", "clothingType": "스니커즈"}], "_reasoning": "맑음 봄 따뜻함 → base-accent (활기). warm_light 상의 + warm_neutral 하의 베이스에 cool_accent 신발로 포인트. 여성 봄 데이트룩."}}, {"case_id": 3, "input": {"season": "summer", "weather": {"temp_celsius": 26, "sky": "overcast", "precipitation": "rain", "wind_ms": 5, "pm": "normal"}, "user": {"gender": "M", "theme": "original"}}, "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "여름 비", "season": "summer", "weather_summary": "26°C 비", "items": [{"role": "outer", "colorHex": "1F3A5F", "colorName": "네이비", "clothingType": "방수 후드 자켓"}, {"role": "top", "colorHex": "FFFFFF", "colorName": "퓨어 화이트", "clothingType": "반팔 티"}, {"role": "bottom", "colorHex": "E0EAF0", "colorName": "쿨 그레이", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "5B9CB6", "colorName": "오션 블루", "clothingType": "방수 운동화"}], "_reasoning": "비/우천 → 외투 필수 + 방수 신발. 시원한 톤온톤(blue 가족) — neutral_light → cool_neutral → cool_accent → dark_anchor 그라데이션. 여름 비 정석."}}, {"case_id": 4, "input": {"season": "summer", "weather": {"temp_celsius": 26, "sky": "overcast", "precipitation": "rain", "wind_ms": 5, "pm": "normal"}, "user": {"gender": "F", "theme": "pastel"}}, "output": {"scheme": "monochrome", "scheme_label": "모노크롬", "mood_tag": "여름 비", "season": "summer", "weather_summary": "26°C 비", "items": [{"role": "outer", "colorHex": "5B7C99", "colorName": "더스티 블루", "clothingType": "방수 후드 자켓"}, {"role": "top", "colorHex": "C5D9F1", "colorName": "쿨 라벤더", "clothingType": "긴팔 블라우스"}, {"role": "bottom", "colorHex": "B5E2D5", "colorName": "민트 라이트", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "FFFFFF", "colorName": "퓨어 화이트", "clothingType": "방수 운동화"}], "_reasoning": "비 + pastel → 부드러운 cool 가족 모노크롬(blue/cyan/purple 인접 hue). dark_anchor 외투로 무게중심, 신발은 화이트로 산뜻 마무리."}}, {"case_id": 5, "input": {"season": "autumn", "weather": {"temp_celsius": 14, "sky": "cloudy", "precipitation": "none", "wind_ms": 4, "pm": "normal"}, "user": {"gender": "M", "theme": "monochrome"}}, "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "가을 흐림", "season": "autumn", "weather_summary": "14°C 흐림", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null, "_note": "14°C — 외투 마진. 전형 case 위해 제외 (12°C 임계 초과)"}, {"role": "top", "colorHex": "D7CCBE", "colorName": "웜 라이트 그레이", "clothingType": "맨투맨"}, {"role": "bottom", "colorHex": "6B5F4F", "colorName": "웜 다크", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "2B2520", "colorName": "다크 브라운", "clothingType": "스니커즈"}], "_reasoning": "가을 흐림 14°C — 12°C 초과로 외투 미적용. monochrome 테마 가을 → 따뜻한 grayscale (웜 톤). lightness 그라데이션 (밝→중→어둠) 으로 깊이감."}}, {"case_id": 6, "input": {"season": "autumn", "weather": {"temp_celsius": 14, "sky": "cloudy", "precipitation": "none", "wind_ms": 4, "pm": "normal"}, "user": {"gender": "F", "theme": "pop"}}, "output": {"scheme": "base-accent", "scheme_label": "베이스+포인트", "mood_tag": "가을 흐림", "season": "autumn", "weather_summary": "14°C 흐림", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null, "_note": "14°C — 외투 미적용"}, {"role": "top", "colorHex": "FFE0B2", "colorName": "피치 라이트", "clothingType": "긴팔 블라우스"}, {"role": "bottom", "colorHex": "3E2723", "colorName": "다크 브라운", "clothingType": "청바지"}, {"role": "shoes", "colorHex": "C2185B", "colorName": "라즈베리", "clothingType": "부츠"}], "_reasoning": "pop 테마 가을 → base-accent (절제된 활기). warm_light 상의 + dark_anchor 하의 베이스 + warm_accent 신발 1포인트. 흐린 날 분위기 띄우기."}}, {"case_id": 7, "input": {"season": "winter", "weather": {"temp_celsius": -2, "sky": "clear", "precipitation": "none", "wind_ms": 6, "pm": "bad"}, "user": {"gender": "M", "theme": "cyberpunk"}}, "output": {"scheme": "complement", "scheme_label": "보색대비", "mood_tag": "겨울 추위 + 미세먼지", "season": "winter", "weather_summary": "-2°C 맑음 / 미세먼지 나쁨", "items": [{"role": "outer", "colorHex": "000814", "colorName": "딥 블랙", "clothingType": "미디 패딩"}, {"role": "top", "colorHex": "1A1A2E", "colorName": "다크 슬레이트", "clothingType": "터틀넥 니트"}, {"role": "bottom", "colorHex": "C0C0C0", "colorName": "실버", "clothingType": "기모 슬랙스"}, {"role": "shoes", "colorHex": "00D9FF", "colorName": "아이스 블루", "clothingType": "스니커즈"}], "_reasoning": "cyberpunk 겨울 -2°C → 외투 필수 (롱/미디 패딩). 보색 대비 (딥 다크 베이스 vs 시안 네온). dark_anchor 외투+상의로 무게, 메탈릭 silver 하의로 미래감, 네온 시안 신발로 액센트. PM bad 별도 마스크 추천 분리 가능."}}, {"case_id": 8, "input": {"season": "winter", "weather": {"temp_celsius": -2, "sky": "clear", "precipitation": "none", "wind_ms": 6, "pm": "bad"}, "user": {"gender": "F", "theme": "original"}}, "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "겨울 추위 + 미세먼지", "season": "winter", "weather_summary": "-2°C 맑음 / 미세먼지 나쁨", "items": [{"role": "outer", "colorHex": "2C3E50", "colorName": "미드나잇 블루", "clothingType": "미디 패딩"}, {"role": "top", "colorHex": "8C92A8", "colorName": "스틸 그레이", "clothingType": "터틀넥 니트"}, {"role": "bottom", "colorHex": "1A1A2E", "colorName": "딥 차콜", "clothingType": "기모 슬랙스"}, {"role": "shoes", "colorHex": "8B0000", "colorName": "버건디", "clothingType": "부츠"}], "_reasoning": "winter original → tone-on-tone (cool 가족) + 한 점 따뜻한 액센트 (warm_accent 신발 버건디). dark_anchor 하의 + 외투로 무게, neutral_mid 상의로 균형. 추위에 적합한 깊이감."}}]};
+
+function caseInputBadge(c) {
+  const w = c.input.weather;
+  const u = c.input.user;
+  const themeLabel = {
+    "original":"오리지널","monochrome":"모노크롬","pop":"팝","pastel":"파스텔","cyberpunk":"사이버펑크"
+  }[u.theme] || u.theme;
+  const seasonLabel = {"spring":"봄","summer":"여름","autumn":"가을","winter":"겨울"}[c.input.season];
+  const skyLabel = {"clear":"맑음","cloudy":"흐림","overcast":"흐림"}[w.sky];
+  const precip = w.precipitation === "rain" ? " / 비"
+              : w.precipitation === "snow" ? " / 눈"
+              : "";
+  const pm = w.pm === "bad" || w.pm === "verybad" ? ` / 미세먼지 ${w.pm === "verybad" ? "매우나쁨" : "나쁨"}` : "";
+  return `<b>${seasonLabel} ${w.temp_celsius}°C ${skyLabel}${precip}${pm}</b> · 성별 ${u.gender === "M" ? "남자" : "여자"} · 테마 ${themeLabel}`;
+}
+
+function renderItem(item) {
+  if (!item.colorHex) {
+    return `
+      <div class="item-row">
+        <div class="swatch empty"></div>
+        <div class="item-meta">
+          <div class="empty-note">${item._note || "해당 없음"}</div>
+        </div>
+      </div>
+    `;
+  }
+  const roleLabel = {
+    "outer":"외투","top":"상의","bottom":"하의","shoes":"신발"
+  }[item.role] || item.role;
+  return `
+    <div class="item-row">
+      <div class="swatch" style="background-color: #${item.colorHex};" title="#${item.colorHex}"></div>
+      <div class="item-meta">
+        <div class="name">${item.colorName}</div>
+        <div class="hex">#${item.colorHex}</div>
+        <div class="clothing">${item.clothingType}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderCase(c) {
+  const out = c.output;
+  const itemsHtml = out.items.map(item => {
+    const roleLabel = {"outer":"외투","top":"상의","bottom":"하의","shoes":"신발"}[item.role];
+    return `
+      <div class="role">${roleLabel}</div>
+      ${renderItem(item)}
+    `;
+  }).join("");
+
+  return `
+    <div class="case">
+      <div class="case-header">
+        <div class="case-id">Case ${String(c.case_id).padStart(2,"0")}</div>
+        <div class="case-tags">${out.mood_tag}</div>
+      </div>
+      <div class="case-input">${caseInputBadge(c)}</div>
+      <span class="scheme-mood">${out.scheme_label}</span>
+      <div class="items">${itemsHtml}</div>
+      <div class="reasoning"><b>판단 근거:</b> ${out._reasoning}</div>
+    </div>
+  `;
+}
+
+function render() {
+  if (!data) return;
+  document.getElementById("cases").innerHTML = data.cases.map(renderCase).join("");
+}
+render();
+</script>
+</body>
+</html>

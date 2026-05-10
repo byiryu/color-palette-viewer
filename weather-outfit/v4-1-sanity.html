@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit V4-1 라이트 sanity check</title>
+<style>
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Apple SD Gothic Neo", sans-serif;
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 32px 20px 80px;
+    background: #fafafa;
+    color: #222;
+    line-height: 1.6;
+  }
+  header {
+    border-bottom: 2px solid #222;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { margin: 0 0 8px; font-size: 24px; }
+  header p { margin: 4px 0; color: #555; font-size: 14px; }
+  .scenario {
+    background: white;
+    padding: 24px 28px;
+    margin: 24px 0;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    border: 1px solid #e8e8e8;
+  }
+  .scenario h2 {
+    margin: 0 0 8px;
+    font-size: 18px;
+    color: #222;
+  }
+  .meta {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 20px;
+  }
+  .tag {
+    display: inline-block;
+    padding: 4px 10px;
+    background: #f0f0f0;
+    border-radius: 12px;
+    font-size: 12px;
+    color: #555;
+  }
+  .tag.scheme {
+    background: #222;
+    color: #fff;
+  }
+  .outfit {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 16px;
+  }
+  .item { text-align: center; }
+  .swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 10px;
+    border: 1px solid rgba(0,0,0,0.08);
+    margin-bottom: 8px;
+  }
+  .role {
+    font-size: 11px;
+    color: #999;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+  }
+  .label {
+    font-weight: 600;
+    font-size: 14px;
+    color: #222;
+  }
+  .hex {
+    font-family: 'SF Mono', Menlo, monospace;
+    color: #888;
+    font-size: 12px;
+    margin-top: 2px;
+  }
+  .preview {
+    display: flex;
+    height: 80px;
+    margin-top: 16px;
+    border-radius: 8px;
+    overflow: hidden;
+    border: 1px solid #ddd;
+  }
+  .preview > div { flex: 1; }
+  footer {
+    margin-top: 40px;
+    padding: 24px;
+    background: white;
+    border-radius: 12px;
+    border: 1px solid #e8e8e8;
+    color: #555;
+    font-size: 14px;
+  }
+  footer h3 { margin-top: 0; color: #222; }
+  footer code {
+    background: #f0f0f0;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
+</style>
+</head>
+<body>
+<header>
+  <h1>weather-outfit V4-1 라이트 sanity check</h1>
+  <p>5개 대표 시나리오 — Claude가 즉답한 색 조합</p>
+  <p>판정 기준: 시각적으로 흉하지 않은가? 5개 중 몇 개 PASS?</p>
+</header>
+
+<!-- 시나리오 1 -->
+<div class="scenario">
+  <h2>시나리오 1 — 봄 18°C 맑음 / 여성</h2>
+  <div class="meta">
+    <span class="tag scheme">베이스 + 포인트</span>
+    <span class="tag">봄 산뜻</span>
+    <span class="tag">외투 불필요</span>
+  </div>
+  <div class="outfit">
+    <div class="item">
+      <div class="role">상의</div>
+      <div class="swatch" style="background:#F8F8F2"></div>
+      <div class="label">오프화이트 면 긴팔티</div>
+      <div class="hex">#F8F8F2</div>
+    </div>
+    <div class="item">
+      <div class="role">하의</div>
+      <div class="swatch" style="background:#2C4E80"></div>
+      <div class="label">인디고 청바지</div>
+      <div class="hex">#2C4E80</div>
+    </div>
+    <div class="item">
+      <div class="role">신발</div>
+      <div class="swatch" style="background:#D2B48C"></div>
+      <div class="label">베이지 캔버스 스니커즈</div>
+      <div class="hex">#D2B48C</div>
+    </div>
+  </div>
+  <div class="preview">
+    <div style="background:#F8F8F2"></div>
+    <div style="background:#2C4E80"></div>
+    <div style="background:#D2B48C"></div>
+  </div>
+</div>
+
+<!-- 시나리오 2 -->
+<div class="scenario">
+  <h2>시나리오 2 — 여름 30°C 맑음 / 남성</h2>
+  <div class="meta">
+    <span class="tag scheme">톤온톤</span>
+    <span class="tag">여름 라이트</span>
+    <span class="tag">외투 불필요</span>
+  </div>
+  <div class="outfit">
+    <div class="item">
+      <div class="role">상의</div>
+      <div class="swatch" style="background:#A8D5E8"></div>
+      <div class="label">라이트블루 반팔셔츠</div>
+      <div class="hex">#A8D5E8</div>
+    </div>
+    <div class="item">
+      <div class="role">하의</div>
+      <div class="swatch" style="background:#E8DCC4"></div>
+      <div class="label">베이지 면바지</div>
+      <div class="hex">#E8DCC4</div>
+    </div>
+    <div class="item">
+      <div class="role">신발</div>
+      <div class="swatch" style="background:#FAFAFA"></div>
+      <div class="label">흰 캔버스</div>
+      <div class="hex">#FAFAFA</div>
+    </div>
+  </div>
+  <div class="preview">
+    <div style="background:#A8D5E8"></div>
+    <div style="background:#E8DCC4"></div>
+    <div style="background:#FAFAFA"></div>
+  </div>
+</div>
+
+<!-- 시나리오 3 -->
+<div class="scenario">
+  <h2>시나리오 3 — 가을 10°C 맑음 / 여성</h2>
+  <div class="meta">
+    <span class="tag scheme">톤온톤</span>
+    <span class="tag">가을 따뜻함</span>
+  </div>
+  <div class="outfit">
+    <div class="item">
+      <div class="role">외투</div>
+      <div class="swatch" style="background:#B8865B"></div>
+      <div class="label">카멜 트렌치코트</div>
+      <div class="hex">#B8865B</div>
+    </div>
+    <div class="item">
+      <div class="role">상의</div>
+      <div class="swatch" style="background:#F5EBD0"></div>
+      <div class="label">아이보리 니트</div>
+      <div class="hex">#F5EBD0</div>
+    </div>
+    <div class="item">
+      <div class="role">하의</div>
+      <div class="swatch" style="background:#4A4A50"></div>
+      <div class="label">다크그레이 슬랙스</div>
+      <div class="hex">#4A4A50</div>
+    </div>
+    <div class="item">
+      <div class="role">신발</div>
+      <div class="swatch" style="background:#6B4423"></div>
+      <div class="label">브라운 로퍼</div>
+      <div class="hex">#6B4423</div>
+    </div>
+  </div>
+  <div class="preview">
+    <div style="background:#B8865B"></div>
+    <div style="background:#F5EBD0"></div>
+    <div style="background:#4A4A50"></div>
+    <div style="background:#6B4423"></div>
+  </div>
+</div>
+
+<!-- 시나리오 4 -->
+<div class="scenario">
+  <h2>시나리오 4 — 겨울 -2°C 흐림 / 남성</h2>
+  <div class="meta">
+    <span class="tag scheme">모노크롬</span>
+    <span class="tag">도시적</span>
+    <span class="tag">흐린 겨울</span>
+  </div>
+  <div class="outfit">
+    <div class="item">
+      <div class="role">외투</div>
+      <div class="swatch" style="background:#3A3D42"></div>
+      <div class="label">차콜 코트</div>
+      <div class="hex">#3A3D42</div>
+    </div>
+    <div class="item">
+      <div class="role">상의</div>
+      <div class="swatch" style="background:#1C1C1C"></div>
+      <div class="label">검정 터틀넥</div>
+      <div class="hex">#1C1C1C</div>
+    </div>
+    <div class="item">
+      <div class="role">하의</div>
+      <div class="swatch" style="background:#4A4A50"></div>
+      <div class="label">다크그레이 슬랙스</div>
+      <div class="hex">#4A4A50</div>
+    </div>
+    <div class="item">
+      <div class="role">신발</div>
+      <div class="swatch" style="background:#0A0A0A"></div>
+      <div class="label">블랙 첼시부츠</div>
+      <div class="hex">#0A0A0A</div>
+    </div>
+  </div>
+  <div class="preview">
+    <div style="background:#3A3D42"></div>
+    <div style="background:#1C1C1C"></div>
+    <div style="background:#4A4A50"></div>
+    <div style="background:#0A0A0A"></div>
+  </div>
+</div>
+
+<!-- 시나리오 5 -->
+<div class="scenario">
+  <h2>시나리오 5 — 겨울 -5°C 눈 / 여성</h2>
+  <div class="meta">
+    <span class="tag scheme">베이스 + 포인트</span>
+    <span class="tag">눈 어울림</span>
+  </div>
+  <div class="outfit">
+    <div class="item">
+      <div class="role">외투</div>
+      <div class="swatch" style="background:#F5EBD0"></div>
+      <div class="label">아이보리 패딩</div>
+      <div class="hex">#F5EBD0</div>
+    </div>
+    <div class="item">
+      <div class="role">상의</div>
+      <div class="swatch" style="background:#888888"></div>
+      <div class="label">그레이 터틀넥</div>
+      <div class="hex">#888888</div>
+    </div>
+    <div class="item">
+      <div class="role">하의</div>
+      <div class="swatch" style="background:#1C1C1C"></div>
+      <div class="label">검정 슬림진</div>
+      <div class="hex">#1C1C1C</div>
+    </div>
+    <div class="item">
+      <div class="role">신발</div>
+      <div class="swatch" style="background:#0A0A0A"></div>
+      <div class="label">블랙 부츠</div>
+      <div class="hex">#0A0A0A</div>
+    </div>
+  </div>
+  <div class="preview">
+    <div style="background:#F5EBD0"></div>
+    <div style="background:#888888"></div>
+    <div style="background:#1C1C1C"></div>
+    <div style="background:#0A0A0A"></div>
+  </div>
+</div>
+
+<footer>
+  <h3>판정 가이드</h3>
+  <p>각 시나리오별로 색 조합이 시각적으로 흉하지 않은지 확인합니다.</p>
+  <ul>
+    <li><strong>5/5 PASS</strong> → V4-1 통과, v1.0 착수 가능</li>
+    <li><strong>3~4/5 PASS</strong> → 부분 보강 필요 (어느 시나리오가 별로인지 표시)</li>
+    <li><strong>2/5 이하</strong> → FAIL, 알고리즘 재설계</li>
+  </ul>
+  <p>각 시나리오 하단의 가로 컬러바는 해당 코디의 색감을 한눈에 확인하기 위한 미리보기입니다.</p>
+</footer>
+</body>
+</html>

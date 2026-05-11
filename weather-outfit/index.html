@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit (PALETI) — 미리보기</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #f8f5f0;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  .breadcrumb { color: #888; font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: #2c4e80; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  header { margin-bottom: 32px; padding-bottom: 16px; border-bottom: 2px solid #1a1a1a; }
+  h1 { font-size: 28px; margin-bottom: 6px; }
+  .codename { font-size: 13px; color: #888; font-family: ui-monospace, "SF Mono", monospace; }
+  .description { color: #555; margin-top: 8px; font-size: 14px; }
+
+  h2 {
+    font-size: 16px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 32px 0 14px;
+  }
+
+  .section-note {
+    font-size: 13px;
+    color: #888;
+    margin-bottom: 16px;
+    padding: 10px 14px;
+    background: #fff;
+    border-radius: 8px;
+    border-left: 3px solid #ffd43b;
+  }
+  .section-note.released { border-left-color: #51cf66; }
+
+  .files { display: grid; grid-template-columns: 1fr; gap: 8px; }
+  @media (min-width: 700px) { .files { grid-template-columns: 1fr 1fr; } }
+
+  .file-link {
+    background: #fff;
+    border: 1px solid #e8e5e0;
+    border-radius: 10px;
+    padding: 14px 16px;
+    text-decoration: none;
+    color: #1a1a1a;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.15s;
+  }
+  .file-link:hover { border-color: #2c4e80; transform: translateY(-1px); }
+  .file-name { font-weight: 600; font-size: 14px; }
+  .file-meta { font-size: 11px; color: #888; margin-top: 2px; }
+  .file-arrow { color: #888; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../">byiryu studio</a> / weather-outfit
+  </div>
+
+  <header>
+    <h1>PALETI</h1>
+    <div class="codename">codename: weather-outfit</div>
+    <p class="description">GPS 날씨 기반 색상·옷종류 추천 앱 — Stage 3 (디자인) 진행 중</p>
+  </header>
+
+  <h2>디자인 (Design)</h2>
+  <div class="section-note">
+    ⚠️ <b>출시 시점에 공개</b>됩니다. 디자인 작업물은 출시 전엔 비공개 (로컬만).
+    출시(M6 Android, M7 iOS) 이후 이 디렉토리에 추가됩니다.
+  </div>
+
+  <h2>검증 자료 (Sanity)</h2>
+  <div class="section-note">
+    의사결정 흔적 — 색상 검증, 추천 엔진 sanity, 디자인 시스템 옵션 비교 등.
+    출시 전 작업물이지만 의사결정 추적용으로 공개 보존.
+  </div>
+  <div class="files">
+
+    <a href="sanity/v4-1.html" class="file-link">
+      <div>
+        <div class="file-name">V4-1 — Claude즉답 색상 5 시나리오</div>
+        <div class="file-meta">2026-05-10 · PASS 5/5</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/v4-2a.html" class="file-link">
+      <div>
+        <div class="file-name">V4-2a — 매트릭스+Opus 8 케이스</div>
+        <div class="file-meta">2026-05-10 · PASS 8/8</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/v4-3a.html" class="file-link">
+      <div>
+        <div class="file-name">V4-3a — 나이 변수 6 케이스</div>
+        <div class="file-meta">2026-05-11 · 결정: 1문항 유지</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/design-system-v1.html" class="file-link">
+      <div>
+        <div class="file-name">디자인 시스템 v1 (4 옵션 비교)</div>
+        <div class="file-meta">2026-05-11 · UI 컬러 톤 초안</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/design-system-v2.html" class="file-link">
+      <div>
+        <div class="file-name">디자인 시스템 v2 (3 옵션 단순화)</div>
+        <div class="file-meta">2026-05-11 · 토큰 수 축소</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/design-system-y-variants.html" class="file-link">
+      <div>
+        <div class="file-name">Y 옵션 brand 컬러 5 변주</div>
+        <div class="file-meta">2026-05-11</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/design-system-y-matrix.html" class="file-link">
+      <div>
+        <div class="file-name">Y 옵션 3×3 매트릭스</div>
+        <div class="file-meta">2026-05-11</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+    <a href="sanity/design-system-concepts.html" class="file-link">
+      <div>
+        <div class="file-name">6가지 컨셉 (폭 넓게)</div>
+        <div class="file-meta">2026-05-11 · 미적 만족 도달 실패</div>
+      </div>
+      <div class="file-arrow">→</div>
+    </a>
+
+  </div>
+</div>
+</body>
+</html>

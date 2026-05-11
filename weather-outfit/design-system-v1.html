@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI 디자인 시스템 옵션 비교 (v1)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #f0f0f3;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1600px; margin: 0 auto; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .meta { color: #666; font-size: 14px; }
+
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .legend strong { display: block; margin-bottom: 6px; font-size: 15px; }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  .mode-toggle button {
+    padding: 8px 18px;
+    border: 1px solid #d0d0d3;
+    background: #fff;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .mode-toggle button.active {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+  }
+
+  .options-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+  @media (max-width: 1100px) { .options-grid { grid-template-columns: 1fr; } }
+
+  .option {
+    background: #fff;
+    border: 1px solid #e0e0e3;
+    border-radius: 14px;
+    padding: 22px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .option-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 16px;
+  }
+  .option-title {
+    font-size: 20px;
+    font-weight: 700;
+  }
+  .option-tag {
+    font-size: 12px;
+    background: #f0f0f5;
+    padding: 4px 10px;
+    border-radius: 999px;
+    color: #555;
+  }
+  .option-description {
+    font-size: 13px;
+    color: #666;
+    margin-bottom: 16px;
+  }
+
+  /* 토큰 칩 영역 */
+  .tokens {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 8px;
+    margin-bottom: 18px;
+  }
+  .token {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+  }
+  .token-swatch {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+  .token-label {
+    font-size: 10px;
+    color: #888;
+    text-align: center;
+    font-weight: 500;
+  }
+  .token-hex {
+    font-size: 10px;
+    color: #aaa;
+    font-family: ui-monospace, "SF Mono", monospace;
+  }
+
+  /* 모바일 mockup */
+  .mockup-frame {
+    background: #2a2a30;
+    border-radius: 28px;
+    padding: 8px;
+    margin: 0 auto;
+    max-width: 320px;
+    box-shadow: 0 8px 28px rgba(0,0,0,0.15);
+  }
+  .mockup {
+    border-radius: 22px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    flex-direction: column;
+    padding: 22px 18px;
+    font-family: -apple-system, "Pretendard", sans-serif;
+  }
+  .mockup-status {
+    height: 8px;
+  }
+  .mock-header {
+    margin-top: 18px;
+    margin-bottom: 20px;
+  }
+  .mock-location {
+    font-size: 22px;
+    font-weight: 700;
+    margin-bottom: 4px;
+    letter-spacing: -0.3px;
+  }
+  .mock-weather {
+    font-size: 13px;
+    opacity: 0.7;
+  }
+  .mock-mood-tag {
+    display: inline-block;
+    padding: 5px 12px;
+    border-radius: 999px;
+    font-size: 11px;
+    font-weight: 600;
+    margin-bottom: 16px;
+  }
+  .mock-items {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .mock-item {
+    border-radius: 14px;
+    padding: 12px 14px;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+  }
+  .mock-item-chip {
+    width: 36px;
+    height: 36px;
+    border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .mock-item-chip.empty {
+    background: transparent !important;
+    border: 1px dashed currentColor;
+    opacity: 0.4;
+  }
+  .mock-item-text { flex: 1; }
+  .mock-item-role {
+    font-size: 10px;
+    opacity: 0.55;
+    text-transform: uppercase;
+    margin-bottom: 2px;
+    font-weight: 600;
+  }
+  .mock-item-name {
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+  .mock-item-clothing {
+    font-size: 11px;
+    opacity: 0.7;
+  }
+  .mock-cta {
+    margin-top: 14px;
+    padding: 13px;
+    border-radius: 12px;
+    text-align: center;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .judgment {
+    margin-top: 32px;
+    padding: 22px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ffe082;
+  }
+  .judgment strong { display: block; margin-bottom: 8px; font-size: 15px; }
+  .judgment ul { margin: 10px 0 0 20px; }
+  .judgment li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>PALETI 디자인 시스템 옵션 비교 (v1)</h1>
+    <p class="meta">4가지 UI 컬러 톤 후보 · Light / Dark 모드 · 메인 화면 미니 mockup · 2026-05-11</p>
+  </header>
+
+  <div class="legend">
+    <strong>검증 목적</strong>
+    PALETI 앱 UI 자체 컬러(배경·텍스트·버튼)를 어떤 톤으로 가져갈지 결정.
+    각 옵션은 동일한 V4-2a 추천 콘텐츠(봄 18°C 맑음 / 여 / original / tone-on-tone)에
+    적용했을 때 어떻게 보이는지 mockup으로 비교.
+    <br><br>
+    <strong>판단 기준</strong>
+    "미니멀 · 따뜻함 · 일상" 비주얼 키워드에 가장 부합하는 옵션 1개 선택 (또는 두 옵션 혼합 요청).
+    Light + Dark 모두 자연스러워야 함.
+  </div>
+
+  <div class="mode-toggle">
+    <span style="font-size:13px;color:#666;margin-right:8px;">표시 모드:</span>
+    <button class="active" id="btn-light">Light</button>
+    <button id="btn-dark">Dark</button>
+    <button id="btn-both">둘 다</button>
+  </div>
+
+  <div class="options-grid" id="options"></div>
+
+  <div class="judgment">
+    <strong>판단 가이드</strong>
+    <ul>
+      <li>"미니멀 + 따뜻함 + 일상" 비주얼 키워드와 가장 잘 어울리는가?</li>
+      <li>4 컬러 칩(콘텐츠)이 UI 컬러에 가려지지 않고 잘 보이는가?</li>
+      <li>Light · Dark 모두 자연스러운가? (Dark에서 텍스트 가독성)</li>
+      <li>20~30대 일상 앱으로 거부감 없는가?</li>
+    </ul>
+    <p style="margin-top:14px;">
+    💡 <b>한 옵션 선택</b>하거나, "옵션 A 베이스에 B의 텍스트 컬러" 같은 <b>혼합 요청</b>도 가능합니다.
+    </p>
+  </div>
+</div>
+
+<script>
+const options = [
+  {
+    id: "A",
+    title: "옵션 A — Warm Minimal",
+    tag: "내 추천",
+    description: "따뜻한 베이지 베이스 + 인디고 액센트. 미니멀+따뜻함 직결, V4-1 인디고 검증 컬러 활용.",
+    light: {
+      bg:        "F8F5F0",
+      surface:   "FFFFFF",
+      primary:   "2C4E80",
+      accent:    "C19A6B",
+      textMuted: "7A7468",
+      text:      "1A1A1A"
+    },
+    dark: {
+      bg:        "1A1815",
+      surface:   "2A2520",
+      primary:   "8FA9C9",
+      accent:    "E8C5A0",
+      textMuted: "A89B8C",
+      text:      "F0EDE8"
+    }
+  },
+  {
+    id: "B",
+    title: "옵션 B — Mono + Single Accent",
+    tag: "콘텐츠 컬러 부각",
+    description: "오프 화이트 베이스 + 차콜 + 단일 인디고 액센트. 콘텐츠(4 컬러 칩)가 가장 돋보임.",
+    light: {
+      bg:        "F8F8F8",
+      surface:   "FFFFFF",
+      primary:   "1A1A1A",
+      accent:    "2C4E80",
+      textMuted: "999999",
+      text:      "1A1A1A"
+    },
+    dark: {
+      bg:        "121212",
+      surface:   "1E1E1E",
+      primary:   "FFFFFF",
+      accent:    "8FA9C9",
+      textMuted: "888888",
+      text:      "F0F0F0"
+    }
+  },
+  {
+    id: "C",
+    title: "옵션 C — Full Warm",
+    tag: "인디고 없이",
+    description: "전면 따뜻한 톤 (베이지·시에나·세이지). 인디고 빼고 따뜻함만 극대화.",
+    light: {
+      bg:        "F8F2EA",
+      surface:   "FFFFFF",
+      primary:   "A0522D",
+      accent:    "8FB89E",
+      textMuted: "8C7853",
+      text:      "2B2520"
+    },
+    dark: {
+      bg:        "1F1A14",
+      surface:   "2E2620",
+      primary:   "D4937F",
+      accent:    "B5D5C4",
+      textMuted: "A89B8C",
+      text:      "F5EFE6"
+    }
+  },
+  {
+    id: "D",
+    title: "옵션 D — Cool Minimal",
+    tag: "Apple Weather 풍",
+    description: "쿨 화이트 + 블루. 깔끔하지만 따뜻함과 충돌 가능.",
+    light: {
+      bg:        "F5F7FA",
+      surface:   "FFFFFF",
+      primary:   "4A90E2",
+      accent:    "5B9CB6",
+      textMuted: "8E8E93",
+      text:      "1C1C1E"
+    },
+    dark: {
+      bg:        "000000",
+      surface:   "1C1C1E",
+      primary:   "64B5F6",
+      accent:    "90D0E6",
+      textMuted: "8E8E93",
+      text:      "FFFFFF"
+    }
+  }
+];
+
+// V4-2a Case 1 추천 데이터 (mockup에 적용)
+const mockData = {
+  location: "서울",
+  weather: "18°C 맑음",
+  mood: "톤온톤 · 봄 따뜻함",
+  items: [
+    { role: "외투", chip: null,     name: "해당 없음", clothing: "" },
+    { role: "상의", chip: "F8F8F2", name: "오프 화이트", clothing: "면 긴팔티" },
+    { role: "하의", chip: "2C4E80", name: "딥 인디고", clothing: "청바지" },
+    { role: "신발", chip: "D2B48C", name: "탠 베이지", clothing: "캔버스화" }
+  ]
+};
+
+const TOKEN_LABELS = {
+  bg: "배경",
+  surface: "표면",
+  primary: "주 액션",
+  accent: "강조",
+  textMuted: "보조 텍스트",
+  text: "주 텍스트"
+};
+
+function tokenSwatch(label, hex, bgFallback) {
+  return `
+    <div class="token">
+      <div class="token-swatch" style="background-color: #${hex};"></div>
+      <div class="token-label">${label}</div>
+      <div class="token-hex">#${hex}</div>
+    </div>
+  `;
+}
+
+function tokensRow(palette) {
+  return Object.entries(palette).map(([key, hex]) =>
+    tokenSwatch(TOKEN_LABELS[key], hex)
+  ).join("");
+}
+
+function mockup(palette) {
+  const itemsHtml = mockData.items.map(it => {
+    const chipStyle = it.chip
+      ? `background-color:#${it.chip};`
+      : "";
+    const chipClass = it.chip ? "" : "empty";
+    return `
+      <div class="mock-item" style="background-color:#${palette.surface};">
+        <div class="mock-item-chip ${chipClass}" style="${chipStyle} color:#${palette.textMuted};"></div>
+        <div class="mock-item-text">
+          <div class="mock-item-role" style="color:#${palette.textMuted};">${it.role}</div>
+          <div class="mock-item-name" style="color:#${palette.text};">${it.name}</div>
+          <div class="mock-item-clothing" style="color:#${palette.textMuted};">${it.clothing}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="mockup-frame">
+      <div class="mockup" style="background-color:#${palette.bg};">
+        <div class="mockup-status"></div>
+        <div class="mock-header">
+          <div class="mock-location" style="color:#${palette.text};">${mockData.location} ↻</div>
+          <div class="mock-weather" style="color:#${palette.textMuted};">${mockData.weather}</div>
+        </div>
+        <div class="mock-mood-tag" style="background-color:#${palette.primary}; color:#${palette.bg};">
+          ${mockData.mood}
+        </div>
+        <div class="mock-items">${itemsHtml}</div>
+        <div class="mock-cta" style="background-color:#${palette.accent}; color:#${palette.bg};">
+          컬러 테마 변경 ▼
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+function renderOption(opt) {
+  const mode = document.body.dataset.mode || "light";
+
+  const lightHtml = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:6px;">Light Tokens</div>
+      <div class="tokens">${tokensRow(opt.light)}</div>
+      <div style="margin-top:14px;">${mockup(opt.light)}</div>
+    </div>
+  `;
+  const darkHtml = `
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:#888;font-weight:600;text-transform:uppercase;margin-bottom:6px;">Dark Tokens</div>
+      <div class="tokens">${tokensRow(opt.dark)}</div>
+      <div style="margin-top:14px;">${mockup(opt.dark)}</div>
+    </div>
+  `;
+
+  let content = "";
+  if (mode === "light") content = lightHtml;
+  else if (mode === "dark") content = darkHtml;
+  else content = lightHtml + darkHtml;
+
+  return `
+    <div class="option">
+      <div class="option-header">
+        <div class="option-title">${opt.title}</div>
+        <div class="option-tag">${opt.tag}</div>
+      </div>
+      <div class="option-description">${opt.description}</div>
+      ${content}
+    </div>
+  `;
+}
+
+function render() {
+  document.getElementById("options").innerHTML = options.map(renderOption).join("");
+}
+
+document.getElementById("btn-light").onclick = () => {
+  document.body.dataset.mode = "light";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-light").classList.add("active");
+  render();
+};
+document.getElementById("btn-dark").onclick = () => {
+  document.body.dataset.mode = "dark";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-dark").classList.add("active");
+  render();
+};
+document.getElementById("btn-both").onclick = () => {
+  document.body.dataset.mode = "both";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-both").classList.add("active");
+  render();
+};
+
+document.body.dataset.mode = "light";
+render();
+</script>
+</body>
+</html>

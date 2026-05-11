@@ -1,0 +1,442 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 6가지 컨셉 비교 (폭 넓게)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #f0f0f3;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1600px; margin: 0 auto; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .meta { color: #666; font-size: 14px; }
+
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .legend strong { display: block; margin-bottom: 6px; font-size: 15px; }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 20px;
+    align-items: center;
+    flex-wrap: wrap;
+  }
+  .mode-toggle button {
+    padding: 7px 16px;
+    border: 1px solid #d0d0d3;
+    background: #fff;
+    border-radius: 999px;
+    font-size: 12px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .mode-toggle button.active {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+  }
+
+  .concepts-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 18px;
+  }
+  @media (max-width: 1200px) { .concepts-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 700px) { .concepts-grid { grid-template-columns: 1fr; } }
+
+  .concept {
+    background: #fff;
+    border: 1px solid #e0e0e3;
+    border-radius: 14px;
+    padding: 20px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .concept-header {
+    padding-bottom: 12px;
+    border-bottom: 1px solid #f0f0f0;
+    margin-bottom: 14px;
+  }
+  .concept-title {
+    font-size: 18px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .concept-subtitle {
+    font-size: 12px;
+    color: #888;
+    font-weight: 500;
+  }
+  .concept-keywords {
+    display: flex;
+    gap: 6px;
+    margin: 10px 0;
+    flex-wrap: wrap;
+  }
+  .keyword {
+    background: #f0f0f5;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    color: #555;
+    font-weight: 500;
+  }
+  .concept-description {
+    font-size: 13px;
+    color: #555;
+    margin-bottom: 14px;
+    line-height: 1.6;
+  }
+  .concept-persona {
+    background: #fafafa;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 11px;
+    color: #666;
+    margin-bottom: 14px;
+  }
+  .concept-persona b { color: #1a1a1a; }
+
+  .tokens-mini {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+  .token-mini {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .mockup-frame {
+    background: #2a2a30;
+    border-radius: 22px;
+    padding: 6px;
+    margin: 0 auto;
+    max-width: 240px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+  }
+  .mockup {
+    border-radius: 17px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+  }
+  .mock-header { margin-top: 8px; margin-bottom: 12px; }
+  .mock-location { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .mock-weather { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .mock-mood-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .mock-items { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .mock-item {
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mock-item-chip {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .mock-item-chip.empty {
+    background: transparent !important;
+    border: 1px dashed currentColor;
+    opacity: 0.4;
+  }
+  .mock-item-text { flex: 1; min-width: 0; }
+  .mock-item-role {
+    font-size: 8px;
+    opacity: 0.55;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+  .mock-item-name { font-size: 11px; font-weight: 600; }
+  .mock-item-clothing { font-size: 9px; opacity: 0.7; }
+  .mock-cta {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dark-mockup-wrap { margin-top: 14px; }
+  .row-label {
+    font-size: 10px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+    text-align: center;
+  }
+
+  .judgment {
+    margin-top: 32px;
+    padding: 22px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ffe082;
+  }
+  .judgment strong { display: block; margin-bottom: 8px; font-size: 15px; }
+  .judgment ul { margin: 10px 0 0 20px; }
+  .judgment li { margin-bottom: 4px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>PALETI — 6가지 컨셉 (폭 넓게)</h1>
+    <p class="meta">Warm Minimal / Pure Mono / Bold Trust / Dark Cyber / Pastel Dream / Premium Lux · 2026-05-11</p>
+  </header>
+
+  <div class="legend">
+    <strong>이번엔 진짜 다양하게</strong>
+    이전 시각화들은 모두 "미니멀+따뜻함+일상" 키워드 안에서만 변주했음.
+    이번에는 <b>키워드 자체를 다양화</b>해 6개 컨셉으로 폭 넓게 시각화.
+    PALETI 정체성에 맞는 톤을 발견하기 위함.
+    <br><br>
+    <strong>각 컨셉</strong>
+    1️⃣ 기존 방향 (Warm Minimal) · 2️⃣ 순수 미니멀 (Pure Mono) · 3️⃣ 강한 신뢰감 (Bold Trust, 토스식)
+    · 4️⃣ 도시적 모던 (Dark Cyber) · 5️⃣ 부드러운 캐주얼 (Pastel Dream) · 6️⃣ 절제된 고급감 (Premium Lux)
+  </div>
+
+  <div class="mode-toggle">
+    <span style="font-size:13px;color:#666;margin-right:8px;">표시 모드:</span>
+    <button class="active" id="btn-both">둘 다 (Light + Dark)</button>
+    <button id="btn-light">Light만</button>
+    <button id="btn-dark">Dark만</button>
+  </div>
+
+  <div class="concepts-grid" id="concepts"></div>
+
+  <div class="judgment">
+    <strong>판단 가이드</strong>
+    <ul>
+      <li>각 컨셉의 vibe를 잠깐 보고 <b>본능적으로 끌리는 1~2개</b> 선택</li>
+      <li>혹은 "Pastel + Warm Minimal 사이" 같은 혼합 의견도 OK</li>
+      <li>20~30대 패션·코디 앱으로 가장 자연스러운 톤</li>
+      <li>매일 아침 거울 앞에서 잠깐 보는 일상 도구에 적합한가</li>
+    </ul>
+    <p style="margin-top:14px;">
+    💡 6개 다 별로면 "더 비비드한 컨셉" / "더 차분한 컨셉" 같은 방향 제시 주세요.
+    또는 본인이 좋아하는 다른 앱 (Spotify, Pinterest, Bandlab 등) 톤 차용도 OK.
+    </p>
+  </div>
+</div>
+
+<script>
+const concepts = [
+  {
+    id: 1,
+    title: "Warm Minimal",
+    subtitle: "이전 추천 · Toss/Linear 식",
+    keywords: ["미니멀", "따뜻함", "일상"],
+    description: "따뜻한 베이지 + 인디고 액센트. 차분하고 안정적. 한국 일상 앱 표준 톤.",
+    persona: "20-30대 직장인, 매일 출근 전 거울 앞에서 잠깐 확인",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "2C4E80" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "8FA9C9" }
+  },
+  {
+    id: 2,
+    title: "Pure Mono",
+    subtitle: "Notion · IA Writer 식",
+    keywords: ["깔끔", "정제", "집중"],
+    description: "순수 화이트 + 차콜. 브랜드 컬러 없음. 콘텐츠 컬러 칩이 화면의 모든 컬러를 담당.",
+    persona: "미니멀 라이프 추구, 정보 정제 우선, IT·디자인 직군 다수",
+    light:    { bg: "FFFFFF", surface: "FAFAFA", text: "1A1A1A", textMuted: "888888", brand: "1A1A1A" },
+    dark:     { bg: "0A0A0A", surface: "151515", text: "F0F0F0", textMuted: "888888", brand: "F0F0F0" }
+  },
+  {
+    id: 3,
+    title: "Bold Trust",
+    subtitle: "Toss · 카카오뱅크 식",
+    keywords: ["신뢰", "강함", "모던"],
+    description: "흰 베이스 + 강한 토스 블루. 큰 면적의 브랜드 사용. 한국 시장에 가장 친숙한 톤.",
+    persona: "트렌드 신경 안 쓰는 실용주의, 한국 핀테크 앱 익숙",
+    light:    { bg: "FFFFFF", surface: "F9FAFB", text: "1A1A1A", textMuted: "8B95A1", brand: "3182F6" },
+    dark:     { bg: "0F1419", surface: "1A1F26", text: "F8F9FA", textMuted: "8B95A1", brand: "5B9EFF" }
+  },
+  {
+    id: 4,
+    title: "Dark Cyber",
+    subtitle: "Spotify · Linear 다크 식",
+    keywords: ["도시적", "모던", "세련"],
+    description: "다크 베이스가 메인 + 네온 시안 액센트. 라이트 모드는 보조. 야간 사용·MZ 트렌드.",
+    persona: "MZ 트렌드 민감, 야간 외출 잦음, 게임·미디어 앱 다수 사용",
+    light:    { bg: "F8F8F8", surface: "FFFFFF", text: "1A1A1A", textMuted: "999999", brand: "00B4D8" },
+    dark:     { bg: "0A0A0F", surface: "16161E", text: "F0F0F5", textMuted: "888899", brand: "00D9FF" }
+  },
+  {
+    id: 5,
+    title: "Pastel Dream",
+    subtitle: "Instagram · 카카오 캐릭터 식",
+    keywords: ["부드러움", "로맨틱", "캐주얼"],
+    description: "연한 핑크/라벤더 베이스 + 더스티 핑크 액센트. 따뜻하지만 살짝 펌프한 분위기.",
+    persona: "20대 여성 비중↑, 인스타·핀터레스트 즐기는 사용자",
+    light:    { bg: "FFF5F7", surface: "FFFFFF", text: "2D2538", textMuted: "8E7E96", brand: "C988B4" },
+    dark:     { bg: "2D2538", surface: "3A2F44", text: "FCEBF1", textMuted: "B49DBA", brand: "E8B4D8" }
+  },
+  {
+    id: 6,
+    title: "Premium Lux",
+    subtitle: "Apple · 하이엔드 브랜드 식",
+    keywords: ["절제", "고급", "신중"],
+    description: "다크 베이스 + 골드/구리 액센트. 절제된 럭셔리. 패션 매거진 톤.",
+    persona: "30~40대 패션 관심층, 디테일·품질 중시",
+    light:    { bg: "FAF7F2", surface: "FFFFFF", text: "1A1815", textMuted: "7A6F5E", brand: "B8946A" },
+    dark:     { bg: "1A1612", surface: "26201A", text: "F5EBD8", textMuted: "A89684", brand: "D4A574" }
+  }
+];
+
+const mockData = {
+  location: "서울",
+  weather: "18°C 맑음",
+  mood: "톤온톤 · 봄 따뜻함",
+  items: [
+    { role: "외투", chip: null,     name: "해당 없음", clothing: "" },
+    { role: "상의", chip: "F8F8F2", name: "오프 화이트", clothing: "면 긴팔티" },
+    { role: "하의", chip: "2C4E80", name: "딥 인디고", clothing: "청바지" },
+    { role: "신발", chip: "D2B48C", name: "탠 베이지", clothing: "캔버스화" }
+  ]
+};
+
+function tokensMini(palette) {
+  return Object.values(palette).map(hex =>
+    `<div class="token-mini" style="background-color: #${hex};"></div>`
+  ).join("");
+}
+
+function mockup(palette) {
+  const moodStyle = `background-color:${palette.text}10; color:#${palette.textMuted}; border:1px solid #${palette.textMuted}33;`;
+  const ctaStyle = `background-color:#${palette.brand}; color:#${palette.bg};`;
+
+  const itemsHtml = mockData.items.map(it => {
+    const chipStyle = it.chip ? `background-color:#${it.chip};` : "";
+    const chipClass = it.chip ? "" : "empty";
+    return `
+      <div class="mock-item" style="background-color:#${palette.surface};">
+        <div class="mock-item-chip ${chipClass}" style="${chipStyle} color:#${palette.textMuted};"></div>
+        <div class="mock-item-text">
+          <div class="mock-item-role" style="color:#${palette.textMuted};">${it.role}</div>
+          <div class="mock-item-name" style="color:#${palette.text};">${it.name}</div>
+          <div class="mock-item-clothing" style="color:#${palette.textMuted};">${it.clothing}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="mockup-frame">
+      <div class="mockup" style="background-color:#${palette.bg};">
+        <div class="mock-header">
+          <div class="mock-location" style="color:#${palette.text};">${mockData.location} ↻</div>
+          <div class="mock-weather" style="color:#${palette.textMuted};">${mockData.weather}</div>
+        </div>
+        <div class="mock-mood-tag" style="${moodStyle}">${mockData.mood}</div>
+        <div class="mock-items">${itemsHtml}</div>
+        <div class="mock-cta" style="${ctaStyle}">컬러 테마 변경 ▼</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderConcept(c) {
+  const mode = document.body.dataset.mode || "both";
+  const keywordsHtml = c.keywords.map(k => `<span class="keyword">${k}</span>`).join("");
+
+  const lightHtml = `
+    <div>
+      <div class="row-label">Light</div>
+      <div class="tokens-mini">${tokensMini(c.light)}</div>
+      ${mockup(c.light)}
+    </div>
+  `;
+  const darkHtml = `
+    <div class="dark-mockup-wrap">
+      <div class="row-label">Dark</div>
+      <div class="tokens-mini">${tokensMini(c.dark)}</div>
+      ${mockup(c.dark)}
+    </div>
+  `;
+
+  let content = "";
+  if (mode === "light") content = lightHtml;
+  else if (mode === "dark") content = darkHtml;
+  else content = lightHtml + darkHtml;
+
+  return `
+    <div class="concept">
+      <div class="concept-header">
+        <div class="concept-title">${c.id}. ${c.title}</div>
+        <div class="concept-subtitle">${c.subtitle}</div>
+        <div class="concept-keywords">${keywordsHtml}</div>
+      </div>
+      <div class="concept-description">${c.description}</div>
+      <div class="concept-persona"><b>주 페르소나:</b> ${c.persona}</div>
+      ${content}
+    </div>
+  `;
+}
+
+function render() {
+  document.getElementById("concepts").innerHTML = concepts.map(renderConcept).join("");
+}
+
+document.getElementById("btn-both").onclick = () => {
+  document.body.dataset.mode = "both";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-both").classList.add("active");
+  render();
+};
+document.getElementById("btn-light").onclick = () => {
+  document.body.dataset.mode = "light";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-light").classList.add("active");
+  render();
+};
+document.getElementById("btn-dark").onclick = () => {
+  document.body.dataset.mode = "dark";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-dark").classList.add("active");
+  render();
+};
+
+document.body.dataset.mode = "both";
+render();
+</script>
+</body>
+</html>

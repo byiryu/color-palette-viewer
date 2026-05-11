@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit M1 step-1 — HSL 매트릭스 1차 5 테마</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --bg: #fafafa;
+    --fg: #1a1a1a;
+    --muted: #666;
+    --card: #fff;
+    --border: #e0e0e0;
+    --accent: #2c4e80;
+  }
+  body.dark {
+    --bg: #1a1a1a;
+    --fg: #f0f0f0;
+    --muted: #aaa;
+    --card: #2a2a2a;
+    --border: #3a3a3a;
+    --accent: #80b3ff;
+  }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: var(--bg);
+    color: var(--fg);
+    line-height: 1.6;
+    padding: 24px;
+    transition: background 0.2s, color 0.2s;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+  .breadcrumb { color: var(--muted); font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: var(--accent); text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  header {
+    border-bottom: 2px solid var(--fg);
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    flex-wrap: wrap;
+    gap: 16px;
+  }
+  h1 { font-size: 26px; margin-bottom: 6px; }
+  .meta { color: var(--muted); font-size: 13px; font-family: ui-monospace, "SF Mono", monospace; }
+  .toggle {
+    background: var(--card);
+    border: 1px solid var(--border);
+    color: var(--fg);
+    padding: 8px 14px;
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 13px;
+    font-family: inherit;
+  }
+  .toggle:hover { border-color: var(--accent); }
+
+  .legend {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: var(--fg);
+  }
+  .legend h3 { font-size: 14px; margin-bottom: 10px; color: var(--fg); }
+  .legend dl { display: grid; grid-template-columns: 130px 1fr; gap: 6px 14px; }
+  .legend dt { color: var(--muted); }
+  .legend .roles { display: flex; gap: 14px; margin-top: 10px; flex-wrap: wrap; }
+  .legend .role-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--muted);
+  }
+  .legend .role-pill::before {
+    content: "";
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+    background: #888;
+  }
+  .role-pill.base::before { background: #4a90e2; }
+  .role-pill.accent::before { background: #f5a623; }
+  .role-pill.neutral::before { background: #9b9b9b; }
+  .role-pill.point::before { background: #d0021b; }
+
+  .theme-section { margin-bottom: 36px; }
+  .theme-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+  .theme-name {
+    font-size: 20px;
+    font-weight: 700;
+    text-transform: capitalize;
+  }
+  .theme-rule { font-size: 13px; color: var(--muted); }
+
+  .tones {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+  }
+  .tone-card {
+    background: var(--card);
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    padding: 14px;
+  }
+  .tone-name {
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+  .swatches {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 6px;
+  }
+  .swatch {
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+    cursor: pointer;
+    position: relative;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+    padding: 4px;
+    font-size: 9px;
+    color: rgba(0,0,0,0.6);
+    transition: transform 0.1s;
+    overflow: hidden;
+  }
+  .swatch:hover { transform: scale(1.08); z-index: 2; }
+  .swatch[data-light="dark"] { color: rgba(255,255,255,0.7); }
+  .swatch .role-dot {
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    border: 1.5px solid rgba(255,255,255,0.8);
+  }
+  body.dark .swatch { border-color: rgba(255,255,255,0.1); }
+
+  .tooltip {
+    position: fixed;
+    background: rgba(0,0,0,0.92);
+    color: #fff;
+    padding: 8px 12px;
+    border-radius: 6px;
+    font-size: 12px;
+    font-family: ui-monospace, monospace;
+    pointer-events: none;
+    z-index: 100;
+    line-height: 1.5;
+    display: none;
+  }
+  .tooltip.show { display: block; }
+
+  .copied {
+    position: fixed;
+    bottom: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--accent);
+    color: #fff;
+    padding: 10px 18px;
+    border-radius: 999px;
+    font-size: 13px;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+    z-index: 200;
+  }
+  .copied.show { opacity: 1; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-matrix-5themes
+  </div>
+
+  <header>
+    <div>
+      <h1>M1 step-1 — HSL 매트릭스 1차 5 테마</h1>
+      <div class="meta">2026-05-11 · 5 테마 × 4 톤 × 8 색상 = 160 색상</div>
+    </div>
+    <button class="toggle" id="toggle-bg">다크 배경</button>
+  </header>
+
+  <div class="legend">
+    <h3>구조</h3>
+    <dl>
+      <dt>테마 (5)</dt><dd>original · monochrome · pop · pastel · cyberpunk — 사용자가 마이페이지에서 선택</dd>
+      <dt>톤 (4)</dt><dd>spring_warm · summer_cool · autumn_warm · winter_cool — 계절 자동 결정</dd>
+      <dt>셀당 색상 (8)</dt><dd>base 2 · accent 2 · neutral 2 · point 2</dd>
+      <dt>컬러 스킴 (4)</dt><dd>monochrome · tone-on-tone · base-point · complementary — Claude 가 날씨에 따라 선택</dd>
+    </dl>
+    <div class="roles">
+      <span class="role-pill base">base</span>
+      <span class="role-pill accent">accent</span>
+      <span class="role-pill neutral">neutral</span>
+      <span class="role-pill point">point</span>
+    </div>
+    <div style="margin-top: 10px; color: var(--muted); font-size: 12px;">
+      Swatch 호버 → HSL/Hex/Name 확인 · 클릭 → 클립보드 복사
+    </div>
+  </div>
+
+  <div id="themes"></div>
+</div>
+
+<div class="tooltip" id="tooltip"></div>
+<div class="copied" id="copied">복사됨</div>
+
+<script>
+// ===== 매트릭스 데이터 (server/supabase/functions/_shared/matrix.ts 와 동기화) =====
+const THEME_IDS = ["original", "monochrome", "pop", "pastel", "cyberpunk"];
+const SEASON_TONES = ["spring_warm", "summer_cool", "autumn_warm", "winter_cool"];
+const THEME_RULES = {
+  original: "12계절 표준 — 자연스러운 채도·명도 균형",
+  monochrome: "채도 0-15 + 명도 변화. hue 미묘하게만.",
+  pop: "채도 80-100. 채도 통일 + hue 다양화.",
+  pastel: "채도 30-55 + 명도 75-90. 부드러운 톤.",
+  cyberpunk: "네온 hue 집중 (마젠타·시안·라임·퍼플), S 85-100, L 40-65.",
+};
+
+const MATRIX = {
+  original: {
+    spring_warm: [
+      { h: 35, s: 75, l: 65, name: "Coral", role: "base" },
+      { h: 45, s: 70, l: 60, name: "Peach", role: "base" },
+      { h: 15, s: 65, l: 55, name: "Salmon", role: "accent" },
+      { h: 50, s: 80, l: 70, name: "Apricot", role: "accent" },
+      { h: 40, s: 25, l: 88, name: "Cream", role: "neutral" },
+      { h: 35, s: 20, l: 80, name: "Sand", role: "neutral" },
+      { h: 25, s: 85, l: 50, name: "Tangerine", role: "point" },
+      { h: 100, s: 60, l: 55, name: "Fresh Green", role: "point" },
+    ],
+    summer_cool: [
+      { h: 200, s: 55, l: 70, name: "Sky Blue", role: "base" },
+      { h: 220, s: 50, l: 65, name: "Powder Blue", role: "base" },
+      { h: 280, s: 45, l: 70, name: "Lilac", role: "accent" },
+      { h: 320, s: 40, l: 75, name: "Rose Quartz", role: "accent" },
+      { h: 210, s: 15, l: 85, name: "Mist", role: "neutral" },
+      { h: 240, s: 12, l: 78, name: "Cool Gray", role: "neutral" },
+      { h: 195, s: 75, l: 55, name: "Azure", role: "point" },
+      { h: 340, s: 65, l: 60, name: "Berry", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 25, s: 60, l: 40, name: "Rust", role: "base" },
+      { h: 35, s: 55, l: 45, name: "Caramel", role: "base" },
+      { h: 15, s: 50, l: 35, name: "Burgundy", role: "accent" },
+      { h: 50, s: 65, l: 50, name: "Mustard", role: "accent" },
+      { h: 30, s: 25, l: 60, name: "Tan", role: "neutral" },
+      { h: 40, s: 20, l: 45, name: "Khaki", role: "neutral" },
+      { h: 85, s: 50, l: 35, name: "Olive", role: "point" },
+      { h: 10, s: 70, l: 30, name: "Brick", role: "point" },
+    ],
+    winter_cool: [
+      { h: 220, s: 70, l: 30, name: "Navy", role: "base" },
+      { h: 240, s: 55, l: 25, name: "Indigo", role: "base" },
+      { h: 350, s: 75, l: 40, name: "Crimson", role: "accent" },
+      { h: 270, s: 60, l: 35, name: "Royal Purple", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Pure White", role: "neutral" },
+      { h: 0, s: 0, l: 20, name: "Charcoal", role: "neutral" },
+      { h: 195, s: 85, l: 45, name: "Electric Blue", role: "point" },
+      { h: 145, s: 70, l: 35, name: "Emerald", role: "point" },
+    ],
+  },
+  monochrome: {
+    spring_warm: [
+      { h: 30, s: 10, l: 80, name: "Warm White", role: "base" },
+      { h: 30, s: 8, l: 70, name: "Bone", role: "base" },
+      { h: 30, s: 12, l: 55, name: "Stone", role: "accent" },
+      { h: 30, s: 10, l: 45, name: "Taupe", role: "accent" },
+      { h: 30, s: 5, l: 92, name: "Ivory", role: "neutral" },
+      { h: 30, s: 6, l: 60, name: "Greige", role: "neutral" },
+      { h: 30, s: 14, l: 30, name: "Espresso", role: "point" },
+      { h: 30, s: 13, l: 18, name: "Dark Cocoa", role: "point" },
+    ],
+    summer_cool: [
+      { h: 210, s: 8, l: 85, name: "Cool White", role: "base" },
+      { h: 210, s: 10, l: 70, name: "Pearl", role: "base" },
+      { h: 210, s: 12, l: 55, name: "Slate Gray", role: "accent" },
+      { h: 210, s: 8, l: 40, name: "Steel", role: "accent" },
+      { h: 210, s: 5, l: 92, name: "Mist White", role: "neutral" },
+      { h: 210, s: 6, l: 60, name: "Silver", role: "neutral" },
+      { h: 210, s: 14, l: 25, name: "Graphite", role: "point" },
+      { h: 210, s: 12, l: 15, name: "Onyx", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 25, s: 12, l: 65, name: "Sand Beige", role: "base" },
+      { h: 25, s: 14, l: 50, name: "Mocha", role: "base" },
+      { h: 25, s: 13, l: 35, name: "Coffee", role: "accent" },
+      { h: 25, s: 10, l: 25, name: "Espresso Dark", role: "accent" },
+      { h: 25, s: 8, l: 80, name: "Soft Cream", role: "neutral" },
+      { h: 25, s: 7, l: 55, name: "Warm Gray", role: "neutral" },
+      { h: 25, s: 15, l: 15, name: "Bitter Choco", role: "point" },
+      { h: 25, s: 12, l: 10, name: "Black Brown", role: "point" },
+    ],
+    winter_cool: [
+      { h: 0, s: 0, l: 95, name: "White", role: "base" },
+      { h: 0, s: 0, l: 80, name: "Light Gray", role: "base" },
+      { h: 0, s: 0, l: 50, name: "Mid Gray", role: "accent" },
+      { h: 0, s: 0, l: 30, name: "Dark Gray", role: "accent" },
+      { h: 0, s: 0, l: 88, name: "Off White", role: "neutral" },
+      { h: 0, s: 0, l: 65, name: "Silver Gray", role: "neutral" },
+      { h: 0, s: 0, l: 10, name: "Pure Black", role: "point" },
+      { h: 0, s: 0, l: 20, name: "Charcoal", role: "point" },
+    ],
+  },
+  pop: {
+    spring_warm: [
+      { h: 50, s: 95, l: 60, name: "Sunny Yellow", role: "base" },
+      { h: 25, s: 90, l: 55, name: "Vivid Orange", role: "base" },
+      { h: 340, s: 85, l: 60, name: "Hot Pink", role: "accent" },
+      { h: 100, s: 90, l: 50, name: "Lime", role: "accent" },
+      { h: 40, s: 50, l: 88, name: "Soft Cream", role: "neutral" },
+      { h: 35, s: 40, l: 75, name: "Light Sand", role: "neutral" },
+      { h: 5, s: 95, l: 50, name: "Bright Red", role: "point" },
+      { h: 195, s: 95, l: 55, name: "Aqua", role: "point" },
+    ],
+    summer_cool: [
+      { h: 195, s: 95, l: 55, name: "Aqua Blue", role: "base" },
+      { h: 220, s: 90, l: 55, name: "Royal Blue", role: "base" },
+      { h: 290, s: 80, l: 60, name: "Hot Magenta", role: "accent" },
+      { h: 320, s: 85, l: 60, name: "Pink Pop", role: "accent" },
+      { h: 200, s: 30, l: 90, name: "Cool Cream", role: "neutral" },
+      { h: 210, s: 25, l: 75, name: "Light Sky", role: "neutral" },
+      { h: 170, s: 90, l: 45, name: "Teal Pop", role: "point" },
+      { h: 60, s: 95, l: 60, name: "Citrus", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 20, s: 95, l: 50, name: "Pumpkin", role: "base" },
+      { h: 45, s: 90, l: 55, name: "Golden", role: "base" },
+      { h: 350, s: 85, l: 45, name: "Cherry Red", role: "accent" },
+      { h: 5, s: 95, l: 45, name: "Crimson Pop", role: "accent" },
+      { h: 30, s: 50, l: 80, name: "Wheat", role: "neutral" },
+      { h: 25, s: 40, l: 60, name: "Warm Beige", role: "neutral" },
+      { h: 75, s: 85, l: 45, name: "Lime Olive", role: "point" },
+      { h: 285, s: 80, l: 45, name: "Plum Pop", role: "point" },
+    ],
+    winter_cool: [
+      { h: 240, s: 95, l: 50, name: "Electric Indigo", role: "base" },
+      { h: 215, s: 90, l: 45, name: "Royal Navy", role: "base" },
+      { h: 350, s: 95, l: 55, name: "Vivid Pink", role: "accent" },
+      { h: 270, s: 85, l: 55, name: "Vivid Violet", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Snow White", role: "neutral" },
+      { h: 0, s: 0, l: 20, name: "Jet Black", role: "neutral" },
+      { h: 195, s: 95, l: 50, name: "Cyan Pop", role: "point" },
+      { h: 140, s: 90, l: 45, name: "Emerald Pop", role: "point" },
+    ],
+  },
+  pastel: {
+    spring_warm: [
+      { h: 35, s: 50, l: 85, name: "Peach Cream", role: "base" },
+      { h: 25, s: 45, l: 82, name: "Soft Apricot", role: "base" },
+      { h: 350, s: 45, l: 85, name: "Baby Pink", role: "accent" },
+      { h: 100, s: 40, l: 82, name: "Mint Green", role: "accent" },
+      { h: 40, s: 30, l: 92, name: "Vanilla", role: "neutral" },
+      { h: 30, s: 25, l: 88, name: "Powder", role: "neutral" },
+      { h: 15, s: 55, l: 78, name: "Coral Pastel", role: "point" },
+      { h: 55, s: 50, l: 82, name: "Butter", role: "point" },
+    ],
+    summer_cool: [
+      { h: 205, s: 45, l: 85, name: "Sky Pastel", role: "base" },
+      { h: 220, s: 40, l: 82, name: "Periwinkle", role: "base" },
+      { h: 280, s: 40, l: 85, name: "Lavender", role: "accent" },
+      { h: 320, s: 45, l: 85, name: "Cotton Pink", role: "accent" },
+      { h: 200, s: 25, l: 92, name: "Cool Vanilla", role: "neutral" },
+      { h: 230, s: 20, l: 88, name: "Frost", role: "neutral" },
+      { h: 175, s: 50, l: 78, name: "Mint Pastel", role: "point" },
+      { h: 295, s: 50, l: 80, name: "Orchid", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 25, s: 35, l: 78, name: "Caramel Pastel", role: "base" },
+      { h: 35, s: 40, l: 80, name: "Honey", role: "base" },
+      { h: 10, s: 45, l: 78, name: "Dusty Rose", role: "accent" },
+      { h: 45, s: 50, l: 80, name: "Mustard Pastel", role: "accent" },
+      { h: 30, s: 25, l: 88, name: "Pale Sand", role: "neutral" },
+      { h: 30, s: 20, l: 75, name: "Mushroom", role: "neutral" },
+      { h: 80, s: 35, l: 70, name: "Sage Pastel", role: "point" },
+      { h: 350, s: 40, l: 70, name: "Mauve", role: "point" },
+    ],
+    winter_cool: [
+      { h: 220, s: 35, l: 80, name: "Icy Blue", role: "base" },
+      { h: 240, s: 30, l: 82, name: "Pale Indigo", role: "base" },
+      { h: 0, s: 35, l: 85, name: "Pale Pink", role: "accent" },
+      { h: 290, s: 30, l: 82, name: "Pale Violet", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Snow", role: "neutral" },
+      { h: 220, s: 10, l: 85, name: "Pearl Gray", role: "neutral" },
+      { h: 195, s: 45, l: 75, name: "Ice Mint", role: "point" },
+      { h: 155, s: 40, l: 78, name: "Pale Emerald", role: "point" },
+    ],
+  },
+  cyberpunk: {
+    spring_warm: [
+      { h: 320, s: 95, l: 55, name: "Neon Magenta", role: "base" },
+      { h: 340, s: 90, l: 55, name: "Hot Pink Neon", role: "base" },
+      { h: 50, s: 100, l: 55, name: "Acid Yellow", role: "accent" },
+      { h: 95, s: 90, l: 50, name: "Neon Lime", role: "accent" },
+      { h: 0, s: 0, l: 10, name: "Cyber Black", role: "neutral" },
+      { h: 285, s: 25, l: 25, name: "Dark Purple Gray", role: "neutral" },
+      { h: 15, s: 95, l: 50, name: "Neon Red", role: "point" },
+      { h: 290, s: 95, l: 60, name: "Vivid Violet Neon", role: "point" },
+    ],
+    summer_cool: [
+      { h: 185, s: 100, l: 50, name: "Neon Cyan", role: "base" },
+      { h: 195, s: 95, l: 50, name: "Electric Blue", role: "base" },
+      { h: 310, s: 95, l: 55, name: "Cyber Magenta", role: "accent" },
+      { h: 270, s: 90, l: 55, name: "Neon Purple", role: "accent" },
+      { h: 0, s: 0, l: 8, name: "Void Black", role: "neutral" },
+      { h: 220, s: 30, l: 20, name: "Midnight", role: "neutral" },
+      { h: 175, s: 100, l: 55, name: "Hyper Mint", role: "point" },
+      { h: 240, s: 95, l: 60, name: "Neon Indigo", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 25, s: 100, l: 50, name: "Neon Orange", role: "base" },
+      { h: 350, s: 95, l: 50, name: "Cyber Red", role: "base" },
+      { h: 290, s: 90, l: 50, name: "Plasma Purple", role: "accent" },
+      { h: 60, s: 100, l: 55, name: "Toxic Yellow", role: "accent" },
+      { h: 0, s: 0, l: 12, name: "Charred Black", role: "neutral" },
+      { h: 20, s: 20, l: 25, name: "Ember Dark", role: "neutral" },
+      { h: 5, s: 95, l: 45, name: "Blood Red", role: "point" },
+      { h: 100, s: 95, l: 50, name: "Acid Green", role: "point" },
+    ],
+    winter_cool: [
+      { h: 215, s: 100, l: 50, name: "Hyper Blue", role: "base" },
+      { h: 240, s: 95, l: 55, name: "Neon Sapphire", role: "base" },
+      { h: 320, s: 100, l: 55, name: "Laser Pink", role: "accent" },
+      { h: 170, s: 100, l: 50, name: "Cryo Teal", role: "accent" },
+      { h: 0, s: 0, l: 5, name: "Absolute Black", role: "neutral" },
+      { h: 220, s: 50, l: 15, name: "Deep Midnight", role: "neutral" },
+      { h: 195, s: 100, l: 60, name: "Neon Ice", role: "point" },
+      { h: 280, s: 95, l: 60, name: "Synth Purple", role: "point" },
+    ],
+  },
+};
+
+const TONE_LABELS = {
+  spring_warm: "🌸 Spring Warm",
+  summer_cool: "🌊 Summer Cool",
+  autumn_warm: "🍂 Autumn Warm",
+  winter_cool: "❄️ Winter Cool",
+};
+
+const ROLE_COLORS = {
+  base: "#4a90e2",
+  accent: "#f5a623",
+  neutral: "#9b9b9b",
+  point: "#d0021b",
+};
+
+function hslToHex(h, s, l) {
+  s /= 100; l /= 100;
+  const c = (1 - Math.abs(2 * l - 1)) * s;
+  const hh = h / 60;
+  const x = c * (1 - Math.abs((hh % 2) - 1));
+  let r = 0, g = 0, b = 0;
+  if (hh < 1) [r, g, b] = [c, x, 0];
+  else if (hh < 2) [r, g, b] = [x, c, 0];
+  else if (hh < 3) [r, g, b] = [0, c, x];
+  else if (hh < 4) [r, g, b] = [0, x, c];
+  else if (hh < 5) [r, g, b] = [x, 0, c];
+  else [r, g, b] = [c, 0, x];
+  const m = l - c / 2;
+  return "#" + [r, g, b].map(v => {
+    const n = Math.round((v + m) * 255);
+    return n.toString(16).padStart(2, "0");
+  }).join("").toUpperCase();
+}
+
+function render() {
+  const root = document.getElementById("themes");
+  root.innerHTML = "";
+  for (const themeId of THEME_IDS) {
+    const section = document.createElement("section");
+    section.className = "theme-section";
+    section.innerHTML = `
+      <div class="theme-header">
+        <div class="theme-name">${themeId}</div>
+        <div class="theme-rule">${THEME_RULES[themeId]}</div>
+      </div>
+      <div class="tones" id="tones-${themeId}"></div>
+    `;
+    root.appendChild(section);
+    const tonesEl = section.querySelector(`#tones-${themeId}`);
+    for (const tone of SEASON_TONES) {
+      const card = document.createElement("div");
+      card.className = "tone-card";
+      const swatches = MATRIX[themeId][tone].map((c) => {
+        const hex = hslToHex(c.h, c.s, c.l);
+        const isDark = c.l < 50;
+        return `<div class="swatch" data-light="${isDark ? "dark" : "light"}" style="background: ${hex}"
+          data-h="${c.h}" data-s="${c.s}" data-l="${c.l}" data-name="${c.name}"
+          data-role="${c.role}" data-hex="${hex}" title="${c.name}">
+          <span class="role-dot" style="background: ${ROLE_COLORS[c.role]}"></span>
+        </div>`;
+      }).join("");
+      card.innerHTML = `
+        <div class="tone-name">${TONE_LABELS[tone]}</div>
+        <div class="swatches">${swatches}</div>
+      `;
+      tonesEl.appendChild(card);
+    }
+  }
+}
+
+const tooltip = document.getElementById("tooltip");
+const copied = document.getElementById("copied");
+
+document.addEventListener("mouseover", (e) => {
+  if (!e.target.classList.contains("swatch")) return;
+  const t = e.target;
+  tooltip.innerHTML = `
+    <b>${t.dataset.name}</b> · ${t.dataset.role}<br>
+    HSL(${t.dataset.h}, ${t.dataset.s}%, ${t.dataset.l}%)<br>
+    ${t.dataset.hex}
+  `;
+  tooltip.classList.add("show");
+});
+document.addEventListener("mousemove", (e) => {
+  if (!tooltip.classList.contains("show")) return;
+  tooltip.style.left = (e.clientX + 14) + "px";
+  tooltip.style.top = (e.clientY + 14) + "px";
+});
+document.addEventListener("mouseout", (e) => {
+  if (!e.target.classList || !e.target.classList.contains("swatch")) return;
+  tooltip.classList.remove("show");
+});
+document.addEventListener("click", (e) => {
+  if (!e.target.classList.contains("swatch")) return;
+  const t = e.target;
+  const text = `${t.dataset.hex} (${t.dataset.name}, hsl ${t.dataset.h} ${t.dataset.s} ${t.dataset.l})`;
+  navigator.clipboard.writeText(text).then(() => {
+    copied.textContent = `복사: ${text}`;
+    copied.classList.add("show");
+    setTimeout(() => copied.classList.remove("show"), 1500);
+  });
+});
+
+document.getElementById("toggle-bg").addEventListener("click", (e) => {
+  document.body.classList.toggle("dark");
+  e.target.textContent = document.body.classList.contains("dark") ? "라이트 배경" : "다크 배경";
+});
+
+render();
+</script>
+</body>
+</html>

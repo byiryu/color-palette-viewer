@@ -1,0 +1,387 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI 디자인 시스템 — 옵션 Y 브랜드 컬러 5종 변주</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #f0f0f3;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 1600px; margin: 0 auto; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  .meta { color: #666; font-size: 14px; }
+
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .legend strong { display: block; margin-bottom: 6px; font-size: 15px; }
+
+  .mode-toggle {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 24px;
+    align-items: center;
+  }
+  .mode-toggle button {
+    padding: 8px 18px;
+    border: 1px solid #d0d0d3;
+    background: #fff;
+    border-radius: 999px;
+    font-size: 13px;
+    cursor: pointer;
+    font-weight: 500;
+  }
+  .mode-toggle button.active {
+    background: #1a1a1a;
+    color: #fff;
+    border-color: #1a1a1a;
+  }
+
+  .variants-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 1400px) { .variants-grid { grid-template-columns: repeat(3, 1fr); } }
+  @media (max-width: 900px) { .variants-grid { grid-template-columns: repeat(2, 1fr); } }
+  @media (max-width: 600px) { .variants-grid { grid-template-columns: 1fr; } }
+
+  .variant {
+    background: #fff;
+    border: 1px solid #e0e0e3;
+    border-radius: 14px;
+    padding: 18px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .variant-header { margin-bottom: 14px; }
+  .variant-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 4px;
+  }
+  .variant-vibe {
+    font-size: 11px;
+    color: #888;
+    text-transform: uppercase;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+  }
+  .variant-brand-name {
+    font-size: 13px;
+    color: #555;
+    margin-top: 4px;
+  }
+
+  .tokens-mini {
+    display: flex;
+    gap: 5px;
+    margin-bottom: 12px;
+  }
+  .token-mini {
+    flex: 1;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.06);
+  }
+
+  .mockup-frame {
+    background: #2a2a30;
+    border-radius: 24px;
+    padding: 6px;
+    margin: 0 auto;
+    box-shadow: 0 6px 20px rgba(0,0,0,0.12);
+  }
+  .mockup {
+    border-radius: 18px;
+    overflow: hidden;
+    aspect-ratio: 9/16;
+    display: flex;
+    flex-direction: column;
+    padding: 18px 14px;
+  }
+  .mock-header { margin-top: 8px; margin-bottom: 14px; }
+  .mock-location { font-size: 18px; font-weight: 700; letter-spacing: -0.3px; }
+  .mock-weather { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .mock-mood-tag {
+    display: inline-block;
+    padding: 4px 10px;
+    border-radius: 999px;
+    font-size: 10px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .mock-items { flex: 1; display: flex; flex-direction: column; gap: 6px; }
+  .mock-item {
+    border-radius: 10px;
+    padding: 8px 10px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+  .mock-item-chip {
+    width: 26px;
+    height: 26px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .mock-item-chip.empty {
+    background: transparent !important;
+    border: 1px dashed currentColor;
+    opacity: 0.4;
+  }
+  .mock-item-text { flex: 1; }
+  .mock-item-role {
+    font-size: 8px;
+    opacity: 0.55;
+    text-transform: uppercase;
+    font-weight: 600;
+    margin-bottom: 1px;
+  }
+  .mock-item-name { font-size: 11px; font-weight: 600; }
+  .mock-item-clothing { font-size: 9px; opacity: 0.7; }
+  .mock-cta {
+    margin-top: 10px;
+    padding: 10px;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 600;
+  }
+
+  .dark-row { margin-top: 12px; }
+  .row-label {
+    font-size: 10px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+
+  .judgment {
+    margin-top: 32px;
+    padding: 22px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ffe082;
+  }
+  .judgment strong { display: block; margin-bottom: 8px; font-size: 15px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>옵션 Y — 브랜드 컬러 5종 변주</h1>
+    <p class="meta">구조(1 브랜드 + 그레이 ramp)는 유지, brand 컬러만 5종 변경 · 2026-05-11</p>
+  </header>
+
+  <div class="legend">
+    <strong>비교 변수</strong>
+    배경(따뜻한 크림 F8F5F0)과 텍스트 컬러는 모두 동일.
+    <b>brand 컬러 한 가지만 변경</b>해 어떤 톤이 PALETI에 가장 맞는지 비교.
+    <br><br>
+    <strong>각 옵션의 무드</strong>
+    Y1 인디고 (신뢰·차분) / Y2 캐러멜 (따뜻함 직결) / Y3 테라코타 (따뜻함+트렌디) /
+    Y4 세이지 (자연·차분) / Y5 차콜 (Notion 미니멀)
+  </div>
+
+  <div class="mode-toggle">
+    <span style="font-size:13px;color:#666;margin-right:8px;">표시 모드:</span>
+    <button class="active" id="btn-light">Light</button>
+    <button id="btn-dark">Dark</button>
+    <button id="btn-both">둘 다</button>
+  </div>
+
+  <div class="variants-grid" id="variants"></div>
+
+  <div class="judgment">
+    <strong>판단 가이드</strong>
+    <ul style="margin: 10px 0 0 20px;">
+      <li>5개 mockup을 보고 PALETI 정체성에 가장 맞는 brand 컬러 1개 선택</li>
+      <li>"미니멀 + 따뜻함 + 일상" 키워드 기준</li>
+      <li>20~30대가 일상 앱으로 거부감 없는가</li>
+      <li>콘텐츠 컬러 칩(상의·하의·신발)과 브랜드 컬러가 충돌하지 않는가</li>
+    </ul>
+    <p style="margin-top:14px;">
+    💡 5개 중 마음에 드는 게 없으면 다른 톤 후보(예: "라벤더", "olive 더 어두운 톤")도 말씀해주세요.
+    </p>
+  </div>
+</div>
+
+<script>
+const variants = [
+  {
+    id: "Y1",
+    title: "Y1 — 인디고",
+    vibe: "신뢰 · 차분",
+    brandName: "딥 인디고 #2C4E80",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "2C4E80" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "8FA9C9" }
+  },
+  {
+    id: "Y2",
+    title: "Y2 — 캐러멜",
+    vibe: "따뜻함 직결",
+    brandName: "캐러멜 #C19A6B",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "C19A6B" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "E8C5A0" }
+  },
+  {
+    id: "Y3",
+    title: "Y3 — 테라코타",
+    vibe: "따뜻 · 트렌디",
+    brandName: "테라코타 #BC6C25",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "BC6C25" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "D17A47" }
+  },
+  {
+    id: "Y4",
+    title: "Y4 — 세이지",
+    vibe: "자연 · 차분",
+    brandName: "세이지 그린 #6B8E5E",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "6B8E5E" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "A8C49A" }
+  },
+  {
+    id: "Y5",
+    title: "Y5 — 차콜",
+    vibe: "Notion 미니멀",
+    brandName: "차콜 #1A1A1A",
+    light:    { bg: "F8F5F0", surface: "FFFFFF", text: "1A1A1A", textMuted: "7A7468", brand: "1A1A1A" },
+    dark:     { bg: "1A1815", surface: "2A2520", text: "F0EDE8", textMuted: "A89B8C", brand: "F0EDE8" }
+  }
+];
+
+const mockData = {
+  location: "서울",
+  weather: "18°C 맑음",
+  mood: "톤온톤 · 봄 따뜻함",
+  items: [
+    { role: "외투", chip: null,     name: "해당 없음", clothing: "" },
+    { role: "상의", chip: "F8F8F2", name: "오프 화이트", clothing: "면 긴팔티" },
+    { role: "하의", chip: "2C4E80", name: "딥 인디고", clothing: "청바지" },
+    { role: "신발", chip: "D2B48C", name: "탠 베이지", clothing: "캔버스화" }
+  ]
+};
+
+function tokensMini(palette) {
+  return Object.values(palette).map(hex =>
+    `<div class="token-mini" style="background-color: #${hex};"></div>`
+  ).join("");
+}
+
+function mockup(palette) {
+  // Y 구조: mood 태그 muted, CTA brand fill
+  const moodStyle = `background-color:${palette.text}10; color:#${palette.textMuted}; border:1px solid #${palette.textMuted}33;`;
+  // 차콜 브랜드는 흑백이라 별도 처리 (텍스트 가독성)
+  const ctaTextColor = palette.brand.toLowerCase() === "1a1a1a"
+    ? palette.bg
+    : palette.brand.toLowerCase() === "f0ede8"
+      ? palette.bg
+      : palette.bg;
+  const ctaStyle = `background-color:#${palette.brand}; color:#${ctaTextColor};`;
+
+  const itemsHtml = mockData.items.map(it => {
+    const chipStyle = it.chip ? `background-color:#${it.chip};` : "";
+    const chipClass = it.chip ? "" : "empty";
+    return `
+      <div class="mock-item" style="background-color:#${palette.surface};">
+        <div class="mock-item-chip ${chipClass}" style="${chipStyle} color:#${palette.textMuted};"></div>
+        <div class="mock-item-text">
+          <div class="mock-item-role" style="color:#${palette.textMuted};">${it.role}</div>
+          <div class="mock-item-name" style="color:#${palette.text};">${it.name}</div>
+          <div class="mock-item-clothing" style="color:#${palette.textMuted};">${it.clothing}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  return `
+    <div class="mockup-frame">
+      <div class="mockup" style="background-color:#${palette.bg};">
+        <div class="mock-header">
+          <div class="mock-location" style="color:#${palette.text};">${mockData.location} ↻</div>
+          <div class="mock-weather" style="color:#${palette.textMuted};">${mockData.weather}</div>
+        </div>
+        <div class="mock-mood-tag" style="${moodStyle}">${mockData.mood}</div>
+        <div class="mock-items">${itemsHtml}</div>
+        <div class="mock-cta" style="${ctaStyle}">컬러 테마 변경 ▼</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderVariant(v) {
+  const mode = document.body.dataset.mode || "light";
+
+  const section = (palette, label) => `
+    <div class="${label === "Dark" ? "dark-row" : ""}">
+      ${label !== "Light" || mode === "both" ? `<div class="row-label">${label}</div>` : ""}
+      <div class="tokens-mini">${tokensMini(palette)}</div>
+      ${mockup(palette)}
+    </div>
+  `;
+
+  let content = "";
+  if (mode === "light") content = section(v.light, "Light");
+  else if (mode === "dark") content = section(v.dark, "Dark");
+  else content = section(v.light, "Light") + section(v.dark, "Dark");
+
+  return `
+    <div class="variant">
+      <div class="variant-header">
+        <div class="variant-title">${v.title}</div>
+        <div class="variant-vibe">${v.vibe}</div>
+        <div class="variant-brand-name">${v.brandName}</div>
+      </div>
+      ${content}
+    </div>
+  `;
+}
+
+function render() {
+  document.getElementById("variants").innerHTML = variants.map(renderVariant).join("");
+}
+
+document.getElementById("btn-light").onclick = () => {
+  document.body.dataset.mode = "light";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-light").classList.add("active");
+  render();
+};
+document.getElementById("btn-dark").onclick = () => {
+  document.body.dataset.mode = "dark";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-dark").classList.add("active");
+  render();
+};
+document.getElementById("btn-both").onclick = () => {
+  document.body.dataset.mode = "both";
+  document.querySelectorAll(".mode-toggle button").forEach(b => b.classList.remove("active"));
+  document.getElementById("btn-both").classList.add("active");
+  render();
+};
+
+document.body.dataset.mode = "light";
+render();
+</script>
+</body>
+</html>

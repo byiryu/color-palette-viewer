@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit V4-3a — 나이 변수 차이 검증</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #fafafa;
+    color: #1a1a1a;
+    line-height: 1.6;
+    padding: 24px;
+  }
+  .container { max-width: 1400px; margin: 0 auto; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 32px;
+  }
+  h1 { font-size: 28px; margin-bottom: 8px; }
+  h2 { font-size: 20px; margin: 32px 0 12px; }
+  .meta { color: #666; font-size: 14px; }
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 24px;
+    font-size: 14px;
+  }
+  .legend strong { display: block; margin-bottom: 8px; font-size: 15px; }
+  .group {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 24px;
+    margin-bottom: 24px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .group-header {
+    border-bottom: 1px solid #f0f0f0;
+    padding-bottom: 12px;
+    margin-bottom: 18px;
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+  }
+  .group-id {
+    font-size: 18px;
+    font-weight: 700;
+  }
+  .group-label {
+    font-size: 14px;
+    color: #555;
+    background: #f5f5f5;
+    padding: 4px 12px;
+    border-radius: 999px;
+  }
+  .variants {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  @media (max-width: 900px) {
+    .variants { grid-template-columns: 1fr; }
+  }
+  .variant {
+    background: #fafbfc;
+    border: 1px solid #e8eaed;
+    border-radius: 10px;
+    padding: 16px;
+  }
+  .age-badge {
+    display: inline-block;
+    background: #1a1a1a;
+    color: #fff;
+    padding: 6px 14px;
+    border-radius: 999px;
+    font-size: 13px;
+    font-weight: 600;
+    margin-bottom: 12px;
+  }
+  .scheme-mood {
+    display: inline-block;
+    background: #4a90e2;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+    margin-bottom: 10px;
+    margin-left: 6px;
+  }
+  .items {
+    display: grid;
+    grid-template-columns: 64px 1fr;
+    gap: 8px 12px;
+    align-items: center;
+    margin-bottom: 12px;
+  }
+  .role {
+    font-size: 11px;
+    color: #888;
+    font-weight: 600;
+    text-transform: uppercase;
+  }
+  .item-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swatch {
+    width: 48px;
+    height: 48px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+    flex-shrink: 0;
+  }
+  .swatch.empty {
+    background: repeating-linear-gradient(45deg, #f0f0f0 0 6px, #fff 6px 12px);
+    border: 1px dashed #ccc;
+  }
+  .item-meta { font-size: 12px; }
+  .item-meta .name { font-weight: 600; }
+  .item-meta .hex { color: #888; font-family: ui-monospace, "SF Mono", monospace; font-size: 11px; }
+  .item-meta .clothing { color: #444; margin-top: 1px; }
+  .empty-note { color: #999; font-style: italic; font-size: 12px; }
+  .age-signal {
+    margin-top: 8px;
+    padding: 8px 10px;
+    background: #fff8e1;
+    border-left: 3px solid #ffa726;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #555;
+  }
+  .reasoning {
+    margin-top: 6px;
+    padding: 8px 10px;
+    background: #f5f7fa;
+    border-left: 3px solid #4a90e2;
+    border-radius: 4px;
+    font-size: 12px;
+    color: #555;
+  }
+  .judgment {
+    margin-top: 36px;
+    padding: 24px;
+    background: #fff8e1;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #ffe082;
+  }
+  .judgment strong { display: block; margin-bottom: 6px; font-size: 15px; }
+  .judgment ul { margin: 10px 0 10px 20px; }
+  .judgment li { margin-bottom: 4px; }
+  .decision-table {
+    margin-top: 16px;
+    width: 100%;
+    border-collapse: collapse;
+    background: #fff;
+    border-radius: 6px;
+    overflow: hidden;
+  }
+  .decision-table th, .decision-table td {
+    padding: 10px 14px;
+    text-align: left;
+    border-bottom: 1px solid #f0f0f0;
+    font-size: 13px;
+  }
+  .decision-table th {
+    background: #f5f5f5;
+    font-weight: 600;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>V4-3a — 나이 변수 차이 검증</h1>
+    <p class="meta">2 base 시나리오 × 3 나이대 = 6 케이스 · 2026-05-11</p>
+  </header>
+
+  <div class="legend">
+    <strong>검증 질문</strong>
+    "동일한 날씨·성별·테마 입력에 나이만 다르면 추천이 의미 있게 달라지는가?"
+    <br><br>
+    <strong>결과로 결정할 것</strong>
+    v1.0 온보딩 — 성별 1문항 유지 vs 나이대 추가 2문항.
+    <br><br>
+    <strong>비교 방법</strong>
+    각 group 안의 3 변주(20s/30s/40s)를 좌우로 나란히 보고, <b>색·옷종류 차이가 한눈에 보이는가</b> 평가.
+  </div>
+
+  <div id="groups"></div>
+
+  <div class="judgment">
+    <strong>판단 가이드</strong>
+    <ul>
+      <li>20s ↔ 40s 차이가 명확하고 자연스러운가? (트렌디 vs 차분)</li>
+      <li>같은 시나리오의 3 변주가 어색하지 않게 나뉘는가?</li>
+      <li>매트릭스 + 프롬프트 modifier 조합으로 충분한 차이가 나오는가?</li>
+    </ul>
+    <table class="decision-table">
+      <tr><th>판단</th><th>v1.0 결정</th></tr>
+      <tr><td>차이 의미 있음 (권장)</td><td>온보딩 2문항 (성별 + 나이대)</td></tr>
+      <tr><td>차이 미미</td><td>온보딩 1문항 유지, 나이는 v1.5 마이페이지</td></tr>
+      <tr><td>차이 애매</td><td>베타 없으므로 의미 있다 가정, 2문항 추가</td></tr>
+    </table>
+  </div>
+</div>
+
+<script>
+const data = {"_meta": {"version": "v4-3a-1", "engine": "Opus 4.7 (1M context)", "matrix": "scripts/weather-outfit/v4-2a/matrix.json", "system_prompt_base": "scripts/weather-outfit/v4-2a/system-prompt.md", "system_prompt_addon": "scripts/weather-outfit/v4-3a/system-prompt-age-addon.md", "purpose": "나이 변수 추천 차이 의미성 검증 — 2 base × 3 나이 = 6 케이스", "decision_target": "v1.0 온보딩에 나이 추가 여부 (의미 있음 → 2문항, 미미 → 1문항 유지)", "date": "2026-05-11"}, "groups": [{"group_id": "A", "label": "봄 18°C 맑음 / 여 / original", "base_input": {"season": "spring", "weather": {"temp_celsius": 18, "sky": "clear", "precipitation": "none", "wind_ms": 3, "pm": "good"}, "user": {"gender": "F", "theme": "original"}}, "variants": [{"age_band": "20s", "output": {"scheme": "base-accent", "scheme_label": "베이스+포인트", "mood_tag": "봄 따뜻함 · 20대 캐주얼", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "F4D5BC", "colorName": "피치 크림", "clothingType": "오버사이즈 맨투맨"}, {"role": "bottom", "colorHex": "2C4E80", "colorName": "딥 인디고", "clothingType": "와이드 청바지"}, {"role": "shoes", "colorHex": "8FB89E", "colorName": "세이지 그린", "clothingType": "캔버스 스니커즈"}], "_age_signal": "20s — 액센트 신발(세이지) + 오버사이즈 캐주얼 옷종류", "_reasoning": "20대 봄 — base-accent로 액센트 활용. warm_light 상의 + dark_anchor 하의 + cool_accent 신발(포인트). 캐주얼 옷종류."}}, {"age_band": "30s", "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "봄 따뜻함 · 30대 균형", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "F8F8F2", "colorName": "오프 화이트", "clothingType": "면 긴팔 블라우스"}, {"role": "bottom", "colorHex": "D2B48C", "colorName": "탠 베이지", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "8FB89E", "colorName": "세이지 그린", "clothingType": "로퍼"}], "_age_signal": "30s — tone-on-tone (베이지 가족), 액센트 1포인트, 직장 친화 블라우스+슬랙스+로퍼", "_reasoning": "30대 봄 — 균형 잡힌 톤온톤(웜 톤). neutral_light → warm_mid → cool_accent. 직장·일상 겸용 옷종류."}}, {"age_band": "40s", "output": {"scheme": "tone-on-tone", "scheme_label": "톤온톤", "mood_tag": "봄 따뜻함 · 40대 차분", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "E8DDD0", "colorName": "샌드 베이지", "clothingType": "긴팔 블라우스"}, {"role": "bottom", "colorHex": "2C4E80", "colorName": "딥 인디고", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "D2B48C", "colorName": "탠 베이지", "clothingType": "로퍼"}], "_age_signal": "40s — 액센트 없음, 모두 neutral 가족, 격식 친화 (블라우스+슬랙스+로퍼)", "_reasoning": "40대 봄 — 차분한 톤온톤. warm_neutral → dark_anchor → warm_mid. 액센트 절제, 격식 옷종류."}}]}, {"group_id": "B", "label": "가을 14°C 흐림 / 남 / original", "base_input": {"season": "autumn", "weather": {"temp_celsius": 14, "sky": "cloudy", "precipitation": "none", "wind_ms": 4, "pm": "normal"}, "user": {"gender": "M", "theme": "original"}}, "variants": [{"age_band": "20s", "output": {"scheme": "complement", "scheme_label": "보색대비", "mood_tag": "가을 흐림 · 20대 트렌디", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "EFE5D5", "colorName": "크림", "clothingType": "오버사이즈 후드"}, {"role": "bottom", "colorHex": "5C6B47", "colorName": "포레스트 그린", "clothingType": "와이드 청바지"}, {"role": "shoes", "colorHex": "A0522D", "colorName": "시에나", "clothingType": "캔버스 스니커즈"}], "_age_signal": "20s — 보색대비(green↔orange), 액센트 신발, 오버사이즈 후드+와이드", "_reasoning": "20대 가을 — complement 스킴. cool_accent 하의 + warm_accent 신발로 강한 대비. 캐주얼 옷종류."}}, {"age_band": "30s", "output": {"scheme": "base-accent", "scheme_label": "베이스+포인트", "mood_tag": "가을 흐림 · 30대 균형", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "C19A6B", "colorName": "캐러멜", "clothingType": "긴팔 니트"}, {"role": "bottom", "colorHex": "6B4423", "colorName": "다크 브라운", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "5C6B47", "colorName": "포레스트 그린", "clothingType": "앵클부츠"}], "_age_signal": "30s — base-accent (브라운 베이스 + 그린 액센트), 균형, 격식+캐주얼", "_reasoning": "30대 가을 — warm_mid 상의 + dark_anchor 하의 + cool_accent 신발 1포인트. 균형 잡힌 옷종류."}}, {"age_band": "40s", "output": {"scheme": "monochrome", "scheme_label": "모노크롬", "mood_tag": "가을 흐림 · 40대 차분", "items": [{"role": "outer", "colorHex": null, "colorName": null, "clothingType": null}, {"role": "top", "colorHex": "8C7853", "colorName": "올리브 브라운", "clothingType": "긴팔 셔츠"}, {"role": "bottom", "colorHex": "6B4423", "colorName": "다크 브라운", "clothingType": "면 슬랙스"}, {"role": "shoes", "colorHex": "6B4423", "colorName": "다크 브라운", "clothingType": "로퍼"}], "_age_signal": "40s — 모노크롬(브라운 가족 단일 hue), 액센트 없음, 격식 셔츠+슬랙스+로퍼", "_reasoning": "40대 가을 — 따뜻한 brown 가족 모노크롬. lightness만 변주 (warm_neutral → dark_anchor ×2). 차분·격식."}}]}], "_judgment_guide": {"question": "나이 변수가 추천에 의미 있는 차이를 만드는가?", "criteria": ["Group A 3 케이스 (봄 여 original) — 색·옷종류 차이가 한눈에 보이는가?", "Group B 3 케이스 (가을 남 original) — 동일?", "20대-40대 차이가 '있어도 그만 없어도 그만' 수준인지, 아니면 의미 있는지?"], "decision_branches": {"차이_의미있음": "v1.0 온보딩에 나이 추가 (성별 + 나이대 2문항)", "차이_미미": "v1.0 spec 유지 (나이는 v1.5 마이페이지 옵션)", "차이_애매": "베타 없으므로 의미 있다 가정하고 v1.0 포함 검토"}}};
+
+function renderItem(item) {
+  if (!item.colorHex) {
+    return `
+      <div class="item-row">
+        <div class="swatch empty"></div>
+        <div class="item-meta"><div class="empty-note">해당 없음</div></div>
+      </div>
+    `;
+  }
+  return `
+    <div class="item-row">
+      <div class="swatch" style="background-color: #${item.colorHex};" title="#${item.colorHex}"></div>
+      <div class="item-meta">
+        <div class="name">${item.colorName}</div>
+        <div class="hex">#${item.colorHex}</div>
+        <div class="clothing">${item.clothingType}</div>
+      </div>
+    </div>
+  `;
+}
+
+function renderVariant(v) {
+  const out = v.output;
+  const itemsHtml = out.items.map(item => {
+    const roleLabel = {"outer":"외투","top":"상의","bottom":"하의","shoes":"신발"}[item.role];
+    return `<div class="role">${roleLabel}</div>${renderItem(item)}`;
+  }).join("");
+  const ageLabel = {"20s":"20대","30s":"30대","40s":"40대"}[v.age_band];
+
+  return `
+    <div class="variant">
+      <span class="age-badge">${ageLabel}</span>
+      <span class="scheme-mood">${out.scheme_label}</span>
+      <div class="items">${itemsHtml}</div>
+      <div class="age-signal"><b>나이 시그널:</b> ${out._age_signal}</div>
+      <div class="reasoning">${out._reasoning}</div>
+    </div>
+  `;
+}
+
+function renderGroup(g) {
+  return `
+    <div class="group">
+      <div class="group-header">
+        <div class="group-id">Group ${g.group_id}</div>
+        <div class="group-label">${g.label}</div>
+      </div>
+      <div class="variants">${g.variants.map(renderVariant).join("")}</div>
+    </div>
+  `;
+}
+
+function render() {
+  if (!data) return;
+  document.getElementById("groups").innerHTML = data.groups.map(renderGroup).join("");
+}
+render();
+</script>
+</body>
+</html>

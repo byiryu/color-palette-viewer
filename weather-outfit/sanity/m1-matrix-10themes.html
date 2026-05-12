@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>weather-outfit M1 step-1 — HSL 매트릭스 1차 4 테마</title>
+<title>weather-outfit M1 step-1+1b — HSL 매트릭스 10 테마 확장</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -195,13 +195,13 @@
 <body>
 <div class="container">
   <div class="breadcrumb">
-    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-matrix-4themes
+    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-matrix-10themes
   </div>
 
   <header>
     <div>
-      <h1>M1 step-1 — HSL 매트릭스 1차 4 테마</h1>
-      <div class="meta">2026-05-12 · 4 테마 × 4 톤 × 8 색상 = 128 색상 · cyberpunk 시각 검증 후 제외</div>
+      <h1>M1 step-1+1b — HSL 매트릭스 10 테마 확장</h1>
+      <div class="meta">2026-05-12 · 10 테마 × 4 톤 × 8 색상 = 320 색상 · 1차 4 + 확장 6</div>
     </div>
     <button class="toggle" id="toggle-bg">다크 배경</button>
   </header>
@@ -209,7 +209,7 @@
   <div class="legend">
     <h3>구조</h3>
     <dl>
-      <dt>테마 (4)</dt><dd>original · monochrome · pop · pastel — 사용자가 마이페이지에서 선택. cyberpunk 시각 검증 후 제외(2026-05-12).</dd>
+      <dt>테마 (10)</dt><dd>original · monochrome · pop · pastel · earth-tone · romantic · cool-street · marine · vintage · forest — 사용자가 마이페이지에서 선택.</dd>
       <dt>톤 (4)</dt><dd>spring_warm · summer_cool · autumn_warm · winter_cool — 계절 자동 결정</dd>
       <dt>셀당 색상 (8)</dt><dd>base 2 · accent 2 · neutral 2 · point 2</dd>
       <dt>컬러 스킴 (4)</dt><dd>monochrome · tone-on-tone · base-point · complementary — Claude 가 날씨에 따라 선택</dd>
@@ -233,13 +233,22 @@
 
 <script>
 // ===== 매트릭스 데이터 (server/supabase/functions/_shared/matrix.ts 와 동기화) =====
-const THEME_IDS = ["original", "monochrome", "pop", "pastel"];
+const THEME_IDS = [
+  "original", "monochrome", "pop", "pastel",
+  "earth-tone", "romantic", "cool-street", "marine", "vintage", "forest",
+];
 const SEASON_TONES = ["spring_warm", "summer_cool", "autumn_warm", "winter_cool"];
 const THEME_RULES = {
-  original: "12계절 표준 — 자연스러운 채도·명도 균형",
-  monochrome: "채도 0-15 + 명도 변화. hue 미묘하게만.",
-  pop: "채도 80-100. 채도 통일 + hue 다양화.",
-  pastel: "채도 30-55 + 명도 75-90. 부드러운 톤.",
+  "original": "12계절 표준 — 자연스러운 채도·명도 균형",
+  "monochrome": "채도 0-15 + 명도 변화. hue 미묘하게만.",
+  "pop": "채도 80-100. 채도 통일 + hue 다양화.",
+  "pastel": "채도 30-55 + 명도 75-90. 부드러운 톤.",
+  "earth-tone": "자연 톤 — 갈색·올리브·테라코타·머슈룸·세이지. S 15-60.",
+  "romantic": "핑크·라벤더·플로럴. pastel 보다 채도 다양.",
+  "cool-street": "네이비·차콜·블랙 + 강한 액센트.",
+  "marine": "블루·화이트·네이비 (해양 톤). H 190-230 중심.",
+  "vintage": "색바랜 톤. S 20-45, 모든 hue 가능.",
+  "forest": "그린·브라운·딥 블루 (자연 톤).",
 };
 
 const MATRIX = {
@@ -409,6 +418,258 @@ const MATRIX = {
       { h: 220, s: 10, l: 85, name: "Pearl Gray", role: "neutral" },
       { h: 195, s: 45, l: 75, name: "Ice Mint", role: "point" },
       { h: 155, s: 40, l: 78, name: "Pale Emerald", role: "point" },
+    ],
+  },
+  "earth-tone": {
+    spring_warm: [
+      { h: 35, s: 40, l: 60, name: "Wheat Beige", role: "base" },
+      { h: 40, s: 45, l: 55, name: "Honey Tan", role: "base" },
+      { h: 25, s: 50, l: 50, name: "Terracotta Light", role: "accent" },
+      { h: 80, s: 35, l: 50, name: "Sage Spring", role: "accent" },
+      { h: 30, s: 25, l: 80, name: "Linen", role: "neutral" },
+      { h: 35, s: 20, l: 65, name: "Camel", role: "neutral" },
+      { h: 15, s: 55, l: 40, name: "Burnt Sienna", role: "point" },
+      { h: 90, s: 40, l: 45, name: "Moss", role: "point" },
+    ],
+    summer_cool: [
+      { h: 75, s: 30, l: 55, name: "Cool Olive", role: "base" },
+      { h: 110, s: 25, l: 50, name: "Forest Sage", role: "base" },
+      { h: 30, s: 30, l: 60, name: "Dusty Tan", role: "accent" },
+      { h: 180, s: 25, l: 45, name: "Slate Green", role: "accent" },
+      { h: 60, s: 15, l: 75, name: "Mushroom", role: "neutral" },
+      { h: 80, s: 12, l: 55, name: "Stone Olive", role: "neutral" },
+      { h: 145, s: 40, l: 35, name: "Deep Sage", role: "point" },
+      { h: 25, s: 35, l: 35, name: "Burnt Umber", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 25, s: 50, l: 35, name: "Deep Terracotta", role: "base" },
+      { h: 30, s: 45, l: 30, name: "Dark Caramel", role: "base" },
+      { h: 10, s: 55, l: 30, name: "Brick Brown", role: "accent" },
+      { h: 45, s: 45, l: 40, name: "Dark Mustard", role: "accent" },
+      { h: 30, s: 25, l: 50, name: "Dirt Neutral", role: "neutral" },
+      { h: 25, s: 20, l: 35, name: "Earth Brown", role: "neutral" },
+      { h: 5, s: 60, l: 30, name: "Rust Deep", role: "point" },
+      { h: 80, s: 50, l: 30, name: "Dark Olive", role: "point" },
+    ],
+    winter_cool: [
+      { h: 25, s: 35, l: 25, name: "Espresso Earth", role: "base" },
+      { h: 90, s: 30, l: 25, name: "Dark Forest Brown", role: "base" },
+      { h: 10, s: 40, l: 25, name: "Burnt Sienna Deep", role: "accent" },
+      { h: 140, s: 35, l: 25, name: "Pine Earth", role: "accent" },
+      { h: 30, s: 15, l: 60, name: "Taupe", role: "neutral" },
+      { h: 30, s: 20, l: 30, name: "Charcoal Brown", role: "neutral" },
+      { h: 0, s: 50, l: 25, name: "Maroon Earth", role: "point" },
+      { h: 60, s: 40, l: 30, name: "Olive Deep", role: "point" },
+    ],
+  },
+  romantic: {
+    spring_warm: [
+      { h: 350, s: 50, l: 80, name: "Blush Pink", role: "base" },
+      { h: 15, s: 55, l: 78, name: "Peach Romance", role: "base" },
+      { h: 330, s: 55, l: 70, name: "Rose Petal", role: "accent" },
+      { h: 5, s: 50, l: 75, name: "Soft Coral", role: "accent" },
+      { h: 30, s: 25, l: 92, name: "Champagne", role: "neutral" },
+      { h: 350, s: 20, l: 88, name: "Pale Rose", role: "neutral" },
+      { h: 340, s: 65, l: 60, name: "Cherry Blossom", role: "point" },
+      { h: 25, s: 60, l: 65, name: "Apricot Glow", role: "point" },
+    ],
+    summer_cool: [
+      { h: 280, s: 45, l: 75, name: "Lavender Romance", role: "base" },
+      { h: 310, s: 50, l: 78, name: "Lilac Romance", role: "base" },
+      { h: 320, s: 55, l: 70, name: "Rose Quartz Bright", role: "accent" },
+      { h: 270, s: 50, l: 75, name: "Wisteria", role: "accent" },
+      { h: 290, s: 20, l: 92, name: "Pale Lavender", role: "neutral" },
+      { h: 310, s: 18, l: 88, name: "Cool Petal", role: "neutral" },
+      { h: 340, s: 60, l: 60, name: "Pink Bloom", role: "point" },
+      { h: 260, s: 55, l: 60, name: "Deep Lavender", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 350, s: 40, l: 65, name: "Dusty Rose Romance", role: "base" },
+      { h: 10, s: 45, l: 60, name: "Warm Mauve", role: "base" },
+      { h: 320, s: 40, l: 60, name: "Mauve Romance", role: "accent" },
+      { h: 30, s: 50, l: 65, name: "Honey Romance", role: "accent" },
+      { h: 25, s: 25, l: 80, name: "Rose Cream", role: "neutral" },
+      { h: 5, s: 25, l: 65, name: "Dusty Pink", role: "neutral" },
+      { h: 0, s: 50, l: 50, name: "Burgundy Rose", role: "point" },
+      { h: 340, s: 60, l: 50, name: "Berry Romance", role: "point" },
+    ],
+    winter_cool: [
+      { h: 320, s: 50, l: 55, name: "Fuchsia Soft", role: "base" },
+      { h: 290, s: 45, l: 50, name: "Plum Romance", role: "base" },
+      { h: 350, s: 60, l: 60, name: "Rose Deep", role: "accent" },
+      { h: 270, s: 55, l: 50, name: "Royal Lavender", role: "accent" },
+      { h: 320, s: 15, l: 92, name: "Snow Pink", role: "neutral" },
+      { h: 300, s: 25, l: 80, name: "Pale Plum", role: "neutral" },
+      { h: 340, s: 70, l: 50, name: "Vivid Rose", role: "point" },
+      { h: 260, s: 65, l: 45, name: "Deep Violet", role: "point" },
+    ],
+  },
+  "cool-street": {
+    spring_warm: [
+      { h: 220, s: 25, l: 30, name: "Street Charcoal", role: "base" },
+      { h: 0, s: 0, l: 25, name: "Asphalt", role: "base" },
+      { h: 25, s: 80, l: 55, name: "Street Orange", role: "accent" },
+      { h: 50, s: 75, l: 60, name: "Caution Yellow", role: "accent" },
+      { h: 0, s: 0, l: 90, name: "Off White Street", role: "neutral" },
+      { h: 220, s: 10, l: 60, name: "Concrete", role: "neutral" },
+      { h: 340, s: 80, l: 55, name: "Hot Street Pink", role: "point" },
+      { h: 100, s: 70, l: 50, name: "Street Lime", role: "point" },
+    ],
+    summer_cool: [
+      { h: 220, s: 60, l: 25, name: "Deep Navy Street", role: "base" },
+      { h: 210, s: 40, l: 35, name: "Steel Blue", role: "base" },
+      { h: 170, s: 70, l: 55, name: "Street Mint", role: "accent" },
+      { h: 195, s: 80, l: 55, name: "Cyan Pop Street", role: "accent" },
+      { h: 220, s: 15, l: 92, name: "Cool Concrete", role: "neutral" },
+      { h: 210, s: 10, l: 50, name: "Slate Street", role: "neutral" },
+      { h: 290, s: 70, l: 55, name: "Street Magenta", role: "point" },
+      { h: 140, s: 70, l: 45, name: "Acid Mint", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 30, s: 15, l: 30, name: "Coffee Charcoal", role: "base" },
+      { h: 25, s: 25, l: 25, name: "Dark Cocoa Street", role: "base" },
+      { h: 45, s: 80, l: 55, name: "Street Mustard", role: "accent" },
+      { h: 15, s: 75, l: 50, name: "Street Rust", role: "accent" },
+      { h: 30, s: 20, l: 80, name: "Wheat Light Street", role: "neutral" },
+      { h: 30, s: 15, l: 50, name: "Stone Warm", role: "neutral" },
+      { h: 0, s: 70, l: 45, name: "Brick Hot", role: "point" },
+      { h: 80, s: 70, l: 40, name: "Lime Olive Street", role: "point" },
+    ],
+    winter_cool: [
+      { h: 0, s: 0, l: 10, name: "Pure Black Street", role: "base" },
+      { h: 220, s: 70, l: 20, name: "Midnight Navy", role: "base" },
+      { h: 0, s: 85, l: 50, name: "Crimson Street", role: "accent" },
+      { h: 240, s: 65, l: 30, name: "Deep Indigo Street", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Pure White Street", role: "neutral" },
+      { h: 220, s: 15, l: 40, name: "Gunmetal", role: "neutral" },
+      { h: 350, s: 90, l: 55, name: "Vivid Red Street", role: "point" },
+      { h: 195, s: 85, l: 55, name: "Electric Cyan Street", role: "point" },
+    ],
+  },
+  marine: {
+    spring_warm: [
+      { h: 200, s: 60, l: 70, name: "Spring Sky", role: "base" },
+      { h: 210, s: 50, l: 75, name: "Cloud Blue", role: "base" },
+      { h: 220, s: 65, l: 55, name: "Azure Spring", role: "accent" },
+      { h: 35, s: 65, l: 70, name: "Coral Marine", role: "accent" },
+      { h: 30, s: 25, l: 92, name: "Cream Sail", role: "neutral" },
+      { h: 200, s: 15, l: 85, name: "Pale Sky Marine", role: "neutral" },
+      { h: 190, s: 80, l: 50, name: "Aqua Pop Marine", role: "point" },
+      { h: 220, s: 75, l: 40, name: "Royal Spring", role: "point" },
+    ],
+    summer_cool: [
+      { h: 195, s: 70, l: 55, name: "Aqua Marine", role: "base" },
+      { h: 215, s: 60, l: 45, name: "Ocean Blue", role: "base" },
+      { h: 220, s: 75, l: 35, name: "Deep Ocean", role: "accent" },
+      { h: 175, s: 60, l: 55, name: "Seafoam", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Sail White", role: "neutral" },
+      { h: 210, s: 25, l: 75, name: "Mist Sky Marine", role: "neutral" },
+      { h: 195, s: 90, l: 50, name: "Tropical Aqua", role: "point" },
+      { h: 240, s: 70, l: 45, name: "Sapphire Marine", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 220, s: 50, l: 35, name: "Storm Blue", role: "base" },
+      { h: 200, s: 40, l: 45, name: "Dusty Navy", role: "base" },
+      { h: 30, s: 50, l: 50, name: "Tan Sail", role: "accent" },
+      { h: 215, s: 55, l: 30, name: "Sailor Navy", role: "accent" },
+      { h: 30, s: 25, l: 80, name: "Sand Marine", role: "neutral" },
+      { h: 210, s: 20, l: 55, name: "Sea Salt", role: "neutral" },
+      { h: 15, s: 60, l: 45, name: "Maritime Rust", role: "point" },
+      { h: 195, s: 75, l: 35, name: "Deep Teal Marine", role: "point" },
+    ],
+    winter_cool: [
+      { h: 220, s: 80, l: 20, name: "Midnight Blue Marine", role: "base" },
+      { h: 230, s: 60, l: 25, name: "Deep Sapphire Marine", role: "base" },
+      { h: 195, s: 75, l: 35, name: "Frost Teal", role: "accent" },
+      { h: 210, s: 70, l: 50, name: "Ice Royal", role: "accent" },
+      { h: 0, s: 0, l: 98, name: "Iceberg White", role: "neutral" },
+      { h: 215, s: 25, l: 70, name: "Glacier Mist", role: "neutral" },
+      { h: 195, s: 90, l: 55, name: "Cyan Marine Pop", role: "point" },
+      { h: 240, s: 75, l: 40, name: "Royal Sapphire Marine", role: "point" },
+    ],
+  },
+  vintage: {
+    spring_warm: [
+      { h: 350, s: 35, l: 70, name: "Vintage Blush", role: "base" },
+      { h: 40, s: 40, l: 65, name: "Vintage Honey", role: "base" },
+      { h: 25, s: 35, l: 55, name: "Faded Salmon", role: "accent" },
+      { h: 50, s: 35, l: 60, name: "Vintage Mustard Light", role: "accent" },
+      { h: 30, s: 20, l: 88, name: "Antique Cream", role: "neutral" },
+      { h: 35, s: 15, l: 75, name: "Vellum", role: "neutral" },
+      { h: 10, s: 40, l: 50, name: "Faded Coral", role: "point" },
+      { h: 80, s: 35, l: 50, name: "Vintage Sage", role: "point" },
+    ],
+    summer_cool: [
+      { h: 210, s: 35, l: 65, name: "Dusty Blue Vintage", role: "base" },
+      { h: 230, s: 30, l: 60, name: "Faded Periwinkle", role: "base" },
+      { h: 320, s: 35, l: 65, name: "Vintage Rose", role: "accent" },
+      { h: 280, s: 30, l: 60, name: "Faded Lilac", role: "accent" },
+      { h: 210, s: 15, l: 85, name: "Antique White Cool", role: "neutral" },
+      { h: 220, s: 12, l: 70, name: "Pale Sage Vintage", role: "neutral" },
+      { h: 195, s: 45, l: 50, name: "Faded Teal", role: "point" },
+      { h: 340, s: 40, l: 55, name: "Vintage Berry", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 35, s: 40, l: 50, name: "Faded Mustard", role: "base" },
+      { h: 25, s: 40, l: 45, name: "Vintage Caramel", role: "base" },
+      { h: 15, s: 35, l: 40, name: "Faded Rust", role: "accent" },
+      { h: 50, s: 40, l: 55, name: "Dusty Mustard", role: "accent" },
+      { h: 30, s: 20, l: 75, name: "Linen Faded", role: "neutral" },
+      { h: 30, s: 18, l: 55, name: "Khaki Faded", role: "neutral" },
+      { h: 85, s: 35, l: 35, name: "Olive Vintage", role: "point" },
+      { h: 5, s: 40, l: 35, name: "Brick Faded", role: "point" },
+    ],
+    winter_cool: [
+      { h: 220, s: 35, l: 35, name: "Vintage Navy", role: "base" },
+      { h: 240, s: 30, l: 30, name: "Faded Indigo", role: "base" },
+      { h: 350, s: 40, l: 45, name: "Faded Burgundy", role: "accent" },
+      { h: 270, s: 30, l: 40, name: "Vintage Plum", role: "accent" },
+      { h: 0, s: 0, l: 88, name: "Ivory Vintage", role: "neutral" },
+      { h: 220, s: 15, l: 50, name: "Pewter", role: "neutral" },
+      { h: 195, s: 40, l: 40, name: "Faded Teal Deep", role: "point" },
+      { h: 40, s: 35, l: 40, name: "Brass", role: "point" },
+    ],
+  },
+  forest: {
+    spring_warm: [
+      { h: 100, s: 45, l: 55, name: "Spring Sage Forest", role: "base" },
+      { h: 80, s: 40, l: 50, name: "Fern", role: "base" },
+      { h: 35, s: 50, l: 50, name: "Wood Brown", role: "accent" },
+      { h: 130, s: 40, l: 45, name: "Spring Moss", role: "accent" },
+      { h: 60, s: 20, l: 85, name: "Linen Forest", role: "neutral" },
+      { h: 80, s: 18, l: 70, name: "Lichen", role: "neutral" },
+      { h: 100, s: 60, l: 40, name: "Deep Sage Forest", role: "point" },
+      { h: 25, s: 55, l: 45, name: "Bark", role: "point" },
+    ],
+    summer_cool: [
+      { h: 140, s: 45, l: 35, name: "Pine Forest", role: "base" },
+      { h: 160, s: 40, l: 40, name: "Forest Teal", role: "base" },
+      { h: 220, s: 35, l: 35, name: "Forest Lake", role: "accent" },
+      { h: 100, s: 45, l: 30, name: "Deep Moss", role: "accent" },
+      { h: 100, s: 15, l: 80, name: "Mist Sage Forest", role: "neutral" },
+      { h: 140, s: 12, l: 55, name: "Stone Green Forest", role: "neutral" },
+      { h: 175, s: 55, l: 35, name: "Emerald Lake", role: "point" },
+      { h: 110, s: 55, l: 30, name: "Hunter Green", role: "point" },
+    ],
+    autumn_warm: [
+      { h: 85, s: 45, l: 35, name: "Olive Forest", role: "base" },
+      { h: 40, s: 45, l: 40, name: "Autumn Bark", role: "base" },
+      { h: 25, s: 50, l: 35, name: "Tree Bark", role: "accent" },
+      { h: 60, s: 50, l: 40, name: "Forest Mustard", role: "accent" },
+      { h: 50, s: 25, l: 75, name: "Hay", role: "neutral" },
+      { h: 60, s: 20, l: 50, name: "Khaki Forest", role: "neutral" },
+      { h: 15, s: 60, l: 35, name: "Maple Forest", role: "point" },
+      { h: 100, s: 50, l: 30, name: "Deep Forest", role: "point" },
+    ],
+    winter_cool: [
+      { h: 145, s: 50, l: 20, name: "Deep Pine Forest", role: "base" },
+      { h: 25, s: 35, l: 20, name: "Tree Trunk", role: "base" },
+      { h: 160, s: 50, l: 25, name: "Emerald Deep Forest", role: "accent" },
+      { h: 30, s: 40, l: 25, name: "Bark Dark", role: "accent" },
+      { h: 0, s: 0, l: 95, name: "Snow Forest", role: "neutral" },
+      { h: 100, s: 15, l: 35, name: "Moss Dark Forest", role: "neutral" },
+      { h: 130, s: 60, l: 25, name: "Christmas Green", role: "point" },
+      { h: 0, s: 0, l: 10, name: "Forest Night", role: "point" },
     ],
   },
 };

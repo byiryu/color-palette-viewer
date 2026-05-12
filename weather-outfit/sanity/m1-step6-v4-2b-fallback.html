@@ -1,0 +1,1121 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>weather-outfit M1 step-6 — V4-2b 20 케이스 (매트릭스 폴백)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #fafafa;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 24px;
+  }
+  .container { max-width: 1280px; margin: 0 auto; }
+  .breadcrumb { color: #888; font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: #2c4e80; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+  header {
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 16px;
+    margin-bottom: 24px;
+  }
+  h1 { font-size: 24px; margin-bottom: 6px; }
+  .meta { color: #666; font-size: 13px; font-family: ui-monospace, "SF Mono", monospace; }
+  .legend {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 14px 18px;
+    margin-bottom: 24px;
+    font-size: 13px;
+    color: #555;
+  }
+  .legend b { color: #1a1a1a; }
+  .grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(360px, 1fr));
+    gap: 16px;
+  }
+  .card {
+    background: #fff;
+    border: 1px solid #e0e0e0;
+    border-radius: 12px;
+    padding: 16px;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.04);
+  }
+  .card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 8px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #f0f0f0;
+  }
+  .case-id {
+    font-size: 16px;
+    font-weight: 700;
+    color: #1a1a1a;
+  }
+  .scheme-tag {
+    background: #1a1a1a;
+    color: #fff;
+    padding: 3px 10px;
+    border-radius: 999px;
+    font-size: 11px;
+  }
+  .label { font-size: 13px; color: #555; margin-bottom: 12px; }
+  .input-tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 12px;
+  }
+  .tag {
+    background: #f4f4f4;
+    padding: 3px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    color: #444;
+    border: 1px solid #e8e8e8;
+  }
+  .tag.weather { background: #e7f0fa; border-color: #c5d9eb; color: #2c4e80; }
+  .tag.theme { background: #faf3e7; border-color: #ebd9b8; color: #80522c; }
+  .items {
+    display: grid;
+    grid-template-columns: 80px 1fr;
+    gap: 8px 12px;
+    font-size: 13px;
+  }
+  .role { color: #888; font-size: 11px; text-transform: uppercase; letter-spacing: 0.5px; align-self: center; }
+  .item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .swatch {
+    width: 28px;
+    height: 28px;
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.1);
+    flex-shrink: 0;
+  }
+  .swatch.empty {
+    background: repeating-linear-gradient(45deg, #f4f4f4, #f4f4f4 4px, #e8e8e8 4px, #e8e8e8 8px);
+  }
+  .item-meta { flex: 1; min-width: 0; }
+  .item-name { font-weight: 600; font-size: 13px; }
+  .item-hex { font-size: 10px; color: #999; font-family: ui-monospace, monospace; }
+  .item-cloth { font-size: 11px; color: #666; }
+  .check {
+    font-size: 11px;
+    color: #51cf66;
+    margin-top: 8px;
+    padding-top: 6px;
+    border-top: 1px dashed #e8e8e8;
+  }
+  .check.warn { color: #ffa400; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-step6-v4-2b-fallback
+  </div>
+
+  <header>
+    <h1>M1 step-6 — V4-2b 20 케이스 (매트릭스 폴백)</h1>
+    <div class="meta">2026-05-12 · V4-2a 8(cyberpunk 대체) + 신규 12 · scheme=tone-on-tone 강제 · Claude 다운 시 안전망</div>
+  </header>
+
+  <div class="legend">
+    <b>목적:</b> Claude 다운/Rate Limit 시 매트릭스 룰 폴백의 시각 검증.
+    Claude 본 호출은 <a href="../sanity/v4-1.html">V4-1</a> · <a href="../sanity/v4-2a.html">V4-2a</a> 에서 검증.
+    <br><b>판정 기준:</b> 폴백 결과가 너무 흉하지 않은가? 외투/옷 종류 적절한가?
+  </div>
+
+  <div class="grid" id="grid"></div>
+</div>
+
+<script>
+const DATA = {
+  "generated_at": "2026-05-12T07:20:12.861Z",
+  "cases": [
+    {
+      "case_id": 1,
+      "label": "봄 18°C 맑음 / M / original",
+      "input": {
+        "season": "spring",
+        "seasonTone": "spring_warm",
+        "temp": 18,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "E9B163",
+            "colorName": "Coral",
+            "clothingType": "긴팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "E0BD52",
+            "colorName": "Peach",
+            "clothingType": "청바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "E8E3D9",
+            "colorName": "Cream",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 2,
+      "label": "봄 18°C 맑음 / F / original",
+      "input": {
+        "season": "spring",
+        "seasonTone": "spring_warm",
+        "temp": 18,
+        "sky": "맑음",
+        "gender": "F",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "E9B163",
+            "colorName": "Coral",
+            "clothingType": "긴팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "E0BD52",
+            "colorName": "Peach",
+            "clothingType": "청바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "E8E3D9",
+            "colorName": "Cream",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 3,
+      "label": "여름 26°C 비 / M / original",
+      "input": {
+        "season": "summer",
+        "seasonTone": "summer_cool",
+        "temp": 26,
+        "sky": "비",
+        "gender": "M",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "C0C0CE",
+            "colorName": "Cool Gray",
+            "clothingType": "얇은 바람막이"
+          },
+          {
+            "role": "top",
+            "colorHex": "88C1DD",
+            "colorName": "Sky Blue",
+            "clothingType": "반팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "7997D2",
+            "colorName": "Powder Blue",
+            "clothingType": "반바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "D3D9DE",
+            "colorName": "Mist",
+            "clothingType": "방수 부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 4,
+      "label": "여름 26°C 비 / F / pastel",
+      "input": {
+        "season": "summer",
+        "seasonTone": "summer_cool",
+        "temp": 26,
+        "sky": "비",
+        "gender": "F",
+        "theme": "pastel"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "DADCE7",
+            "colorName": "Frost",
+            "clothingType": "얇은 바람막이"
+          },
+          {
+            "role": "top",
+            "colorHex": "C8DCEA",
+            "colorName": "Sky Pastel",
+            "clothingType": "반팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "BFCBE3",
+            "colorName": "Periwinkle",
+            "clothingType": "린넨 스커트"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "E6ECF0",
+            "colorName": "Cool Vanilla",
+            "clothingType": "방수 부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 5,
+      "label": "가을 14°C 흐림 / M / monochrome",
+      "input": {
+        "season": "autumn",
+        "seasonTone": "autumn_warm",
+        "temp": 14,
+        "sky": "흐림",
+        "gender": "M",
+        "theme": "monochrome"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "B0A49B",
+            "colorName": "Sand Beige",
+            "clothingType": "니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "917D6E",
+            "colorName": "Mocha",
+            "clothingType": "슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "D0CBC8",
+            "colorName": "Soft Cream",
+            "clothingType": "로퍼"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 6,
+      "label": "가을 14°C 흐림 / F / pop",
+      "input": {
+        "season": "autumn",
+        "seasonTone": "autumn_warm",
+        "temp": 14,
+        "sky": "흐림",
+        "gender": "F",
+        "theme": "pop"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "F95706",
+            "colorName": "Pumpkin",
+            "clothingType": "니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "F4C025",
+            "colorName": "Golden",
+            "clothingType": "슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "E6CCB3",
+            "colorName": "Wheat",
+            "clothingType": "로퍼"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 7,
+      "label": "겨울 -2°C 맑음 / M / original (V4-2a cyberpunk 대체)",
+      "input": {
+        "season": "winter",
+        "seasonTone": "winter_cool",
+        "temp": -2,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "333333",
+            "colorName": "Charcoal",
+            "clothingType": "패딩"
+          },
+          {
+            "role": "top",
+            "colorHex": "173B82",
+            "colorName": "Navy",
+            "clothingType": "이너 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "1D1D63",
+            "colorName": "Indigo",
+            "clothingType": "슬림진"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F2F2F2",
+            "colorName": "Pure White",
+            "clothingType": "부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 8,
+      "label": "겨울 -2°C 맑음 / F / original",
+      "input": {
+        "season": "winter",
+        "seasonTone": "winter_cool",
+        "temp": -2,
+        "sky": "맑음",
+        "gender": "F",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "333333",
+            "colorName": "Charcoal",
+            "clothingType": "패딩"
+          },
+          {
+            "role": "top",
+            "colorHex": "173B82",
+            "colorName": "Navy",
+            "clothingType": "이너 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "1D1D63",
+            "colorName": "Indigo",
+            "clothingType": "슬림진"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F2F2F2",
+            "colorName": "Pure White",
+            "clothingType": "부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 9,
+      "label": "봄 8°C 맑음 / M / earth-tone",
+      "input": {
+        "season": "spring",
+        "seasonTone": "spring_warm",
+        "temp": 8,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "earth-tone"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "B8A994",
+            "colorName": "Camel",
+            "clothingType": "코트"
+          },
+          {
+            "role": "top",
+            "colorHex": "C2A070",
+            "colorName": "Wheat Beige",
+            "clothingType": "두꺼운 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "C09D59",
+            "colorName": "Honey Tan",
+            "clothingType": "기모 슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "D9CCBF",
+            "colorName": "Linen",
+            "clothingType": "부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 10,
+      "label": "봄 22°C 맑음 / F / romantic",
+      "input": {
+        "season": "spring",
+        "seasonTone": "spring_warm",
+        "temp": 22,
+        "sky": "맑음",
+        "gender": "F",
+        "theme": "romantic"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "E6B3BB",
+            "colorName": "Blush Pink",
+            "clothingType": "긴팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "E6B7A8",
+            "colorName": "Peach Romance",
+            "clothingType": "청바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F0EBE6",
+            "colorName": "Champagne",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 11,
+      "label": "여름 30°C 맑음 / M / pop",
+      "input": {
+        "season": "summer",
+        "seasonTone": "summer_cool",
+        "temp": 30,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "pop"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "1FC3F9",
+            "colorName": "Aqua Blue",
+            "clothingType": "반팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "256AF4",
+            "colorName": "Royal Blue",
+            "clothingType": "반바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "DEE8ED",
+            "colorName": "Cool Cream",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 12,
+      "label": "여름 22°C 흐림 / F / marine",
+      "input": {
+        "season": "summer",
+        "seasonTone": "summer_cool",
+        "temp": 22,
+        "sky": "흐림",
+        "gender": "F",
+        "theme": "marine"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "3CB4DD",
+            "colorName": "Aqua Marine",
+            "clothingType": "긴팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "2E67B8",
+            "colorName": "Ocean Blue",
+            "clothingType": "청바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F2F2F2",
+            "colorName": "Sail White",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 13,
+      "label": "가을 18°C 맑음 / M / vintage",
+      "input": {
+        "season": "autumn",
+        "seasonTone": "autumn_warm",
+        "temp": 18,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "vintage"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "B3884D",
+            "colorName": "Faded Mustard",
+            "clothingType": "긴팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "A16B45",
+            "colorName": "Vintage Caramel",
+            "clothingType": "청바지"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "CCBFB3",
+            "colorName": "Linen Faded",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 14,
+      "label": "가을 8°C 비 / F / forest",
+      "input": {
+        "season": "autumn",
+        "seasonTone": "autumn_warm",
+        "temp": 8,
+        "sky": "비",
+        "gender": "F",
+        "theme": "forest"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "999966",
+            "colorName": "Khaki Forest",
+            "clothingType": "코트"
+          },
+          {
+            "role": "top",
+            "colorHex": "608131",
+            "colorName": "Olive Forest",
+            "clothingType": "두꺼운 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "947538",
+            "colorName": "Autumn Bark",
+            "clothingType": "슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "CFCAAF",
+            "colorName": "Hay",
+            "clothingType": "방수 부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 15,
+      "label": "겨울 5°C 맑음 / M / cool-street",
+      "input": {
+        "season": "winter",
+        "seasonTone": "winter_cool",
+        "temp": 5,
+        "sky": "맑음",
+        "gender": "M",
+        "theme": "cool-street"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "576175",
+            "colorName": "Gunmetal",
+            "clothingType": "코트"
+          },
+          {
+            "role": "top",
+            "colorHex": "1A1A1A",
+            "colorName": "Pure Black Street",
+            "clothingType": "두꺼운 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "0F2757",
+            "colorName": "Midnight Navy",
+            "clothingType": "기모 슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F2F2F2",
+            "colorName": "Pure White Street",
+            "clothingType": "부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 16,
+      "label": "겨울 -5°C 눈 / F / pastel",
+      "input": {
+        "season": "winter",
+        "seasonTone": "winter_cool",
+        "temp": -5,
+        "sky": "눈",
+        "gender": "F",
+        "theme": "pastel"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "D5D7DD",
+            "colorName": "Pearl Gray",
+            "clothingType": "패딩"
+          },
+          {
+            "role": "top",
+            "colorHex": "BAC6DE",
+            "colorName": "Icy Blue",
+            "clothingType": "이너 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "C3C3DF",
+            "colorName": "Pale Indigo",
+            "clothingType": "슬림진"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "F2F2F2",
+            "colorName": "Snow",
+            "clothingType": "방수 부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 17,
+      "label": "봄 12°C 비 / M / monochrome",
+      "input": {
+        "season": "spring",
+        "seasonTone": "spring_warm",
+        "temp": 12,
+        "sky": "비",
+        "gender": "M",
+        "theme": "monochrome"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "9F9993",
+            "colorName": "Greige",
+            "clothingType": "트렌치코트"
+          },
+          {
+            "role": "top",
+            "colorHex": "D1CCC7",
+            "colorName": "Warm White",
+            "clothingType": "니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "B9B3AC",
+            "colorName": "Bone",
+            "clothingType": "슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "ECEBEA",
+            "colorName": "Ivory",
+            "clothingType": "방수 부츠"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 18,
+      "label": "여름 28°C 맑음 / F / original",
+      "input": {
+        "season": "summer",
+        "seasonTone": "summer_cool",
+        "temp": 28,
+        "sky": "맑음",
+        "gender": "F",
+        "theme": "original"
+      },
+      "expects": {
+        "needsOuter": false
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": null,
+            "colorName": null,
+            "clothingType": null
+          },
+          {
+            "role": "top",
+            "colorHex": "88C1DD",
+            "colorName": "Sky Blue",
+            "clothingType": "반팔티"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "7997D2",
+            "colorName": "Powder Blue",
+            "clothingType": "린넨 스커트"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "D3D9DE",
+            "colorName": "Mist",
+            "clothingType": "스니커즈"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 19,
+      "label": "가을 12°C 흐림 / M / pop (외투 경계 12°C)",
+      "input": {
+        "season": "autumn",
+        "seasonTone": "autumn_warm",
+        "temp": 12,
+        "sky": "흐림",
+        "gender": "M",
+        "theme": "pop"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "C29270",
+            "colorName": "Warm Beige",
+            "clothingType": "트렌치코트"
+          },
+          {
+            "role": "top",
+            "colorHex": "F95706",
+            "colorName": "Pumpkin",
+            "clothingType": "니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "F4C025",
+            "colorName": "Golden",
+            "clothingType": "슬랙스"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "E6CCB3",
+            "colorName": "Wheat",
+            "clothingType": "로퍼"
+          }
+        ]
+      }
+    },
+    {
+      "case_id": 20,
+      "label": "겨울 -3°C 흐림 / F / earth-tone",
+      "input": {
+        "season": "winter",
+        "seasonTone": "winter_cool",
+        "temp": -3,
+        "sky": "흐림",
+        "gender": "F",
+        "theme": "earth-tone"
+      },
+      "expects": {
+        "needsOuter": true
+      },
+      "output": {
+        "scheme": "tone-on-tone",
+        "scheme_label": "톤온톤",
+        "mood_tag": "기본 추천",
+        "items": [
+          {
+            "role": "outer",
+            "colorHex": "5C4D3D",
+            "colorName": "Charcoal Brown",
+            "clothingType": "패딩"
+          },
+          {
+            "role": "top",
+            "colorHex": "563C29",
+            "colorName": "Espresso Earth",
+            "clothingType": "이너 니트"
+          },
+          {
+            "role": "bottom",
+            "colorHex": "40532D",
+            "colorName": "Dark Forest Brown",
+            "clothingType": "슬림진"
+          },
+          {
+            "role": "shoes",
+            "colorHex": "A8998A",
+            "colorName": "Taupe",
+            "clothingType": "부츠"
+          }
+        ]
+      }
+    }
+  ]
+};
+
+const seasonKo = {"spring":"봄","summer":"여름","autumn":"가을","winter":"겨울"};
+const genderKo = {"M":"남성","F":"여성"};
+
+function renderCase(c) {
+  const w = c.input;
+  const o = c.output;
+  const itemsHtml = o.items.map(it => {
+    const empty = it.colorHex === null;
+    const swatchStyle = empty ? '' : `background:#${it.colorHex}`;
+    const swatchClass = empty ? 'swatch empty' : 'swatch';
+    return `
+      <div class="role">${it.role}</div>
+      <div class="item">
+        <div class="${swatchClass}" style="${swatchStyle}"></div>
+        <div class="item-meta">
+          <div class="item-name">${it.colorName ?? '(없음)'}</div>
+          <div class="item-hex">${it.colorHex ? '#'+it.colorHex : '—'}</div>
+          <div class="item-cloth">${it.clothingType ?? '—'}</div>
+        </div>
+      </div>
+    `;
+  }).join('');
+
+  const outerExpected = c.expects.needsOuter;
+  const outerActual = o.items[0].colorHex !== null;
+  const checkOk = outerExpected === outerActual;
+
+  return `
+    <div class="card">
+      <div class="card-header">
+        <div class="case-id">Case ${String(c.case_id).padStart(2,"0")}</div>
+        <span class="scheme-tag">${o.scheme_label}</span>
+      </div>
+      <div class="label">${c.label}</div>
+      <div class="input-tags">
+        <span class="tag">${seasonKo[w.season]}</span>
+        <span class="tag weather">${w.temp}°C ${w.sky}</span>
+        <span class="tag">${genderKo[w.gender]}</span>
+        <span class="tag theme">${w.theme}</span>
+        <span class="tag">${w.seasonTone}</span>
+      </div>
+      <div class="items">${itemsHtml}</div>
+      <div class="check ${checkOk ? '' : 'warn'}">
+        외투 기대=${outerExpected ? '필요' : '불필요'}, 실제=${outerActual ? '있음' : '없음'} ${checkOk ? '✓' : '✗'}
+      </div>
+    </div>
+  `;
+}
+
+document.getElementById('grid').innerHTML = DATA.cases.map(renderCase).join('');
+</script>
+</body>
+</html>

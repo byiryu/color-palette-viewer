@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>weather-outfit M1 step-1 — HSL 매트릭스 1차 5 테마</title>
+<title>weather-outfit M1 step-1 — HSL 매트릭스 1차 4 테마</title>
 <style>
   * { box-sizing: border-box; margin: 0; padding: 0; }
   :root {
@@ -195,13 +195,13 @@
 <body>
 <div class="container">
   <div class="breadcrumb">
-    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-matrix-5themes
+    <a href="../../">byiryu studio</a> / <a href="../">weather-outfit</a> / sanity / m1-matrix-4themes
   </div>
 
   <header>
     <div>
-      <h1>M1 step-1 — HSL 매트릭스 1차 5 테마</h1>
-      <div class="meta">2026-05-11 · 5 테마 × 4 톤 × 8 색상 = 160 색상</div>
+      <h1>M1 step-1 — HSL 매트릭스 1차 4 테마</h1>
+      <div class="meta">2026-05-12 · 4 테마 × 4 톤 × 8 색상 = 128 색상 · cyberpunk 시각 검증 후 제외</div>
     </div>
     <button class="toggle" id="toggle-bg">다크 배경</button>
   </header>
@@ -209,7 +209,7 @@
   <div class="legend">
     <h3>구조</h3>
     <dl>
-      <dt>테마 (5)</dt><dd>original · monochrome · pop · pastel · cyberpunk — 사용자가 마이페이지에서 선택</dd>
+      <dt>테마 (4)</dt><dd>original · monochrome · pop · pastel — 사용자가 마이페이지에서 선택. cyberpunk 시각 검증 후 제외(2026-05-12).</dd>
       <dt>톤 (4)</dt><dd>spring_warm · summer_cool · autumn_warm · winter_cool — 계절 자동 결정</dd>
       <dt>셀당 색상 (8)</dt><dd>base 2 · accent 2 · neutral 2 · point 2</dd>
       <dt>컬러 스킴 (4)</dt><dd>monochrome · tone-on-tone · base-point · complementary — Claude 가 날씨에 따라 선택</dd>
@@ -233,14 +233,13 @@
 
 <script>
 // ===== 매트릭스 데이터 (server/supabase/functions/_shared/matrix.ts 와 동기화) =====
-const THEME_IDS = ["original", "monochrome", "pop", "pastel", "cyberpunk"];
+const THEME_IDS = ["original", "monochrome", "pop", "pastel"];
 const SEASON_TONES = ["spring_warm", "summer_cool", "autumn_warm", "winter_cool"];
 const THEME_RULES = {
   original: "12계절 표준 — 자연스러운 채도·명도 균형",
   monochrome: "채도 0-15 + 명도 변화. hue 미묘하게만.",
   pop: "채도 80-100. 채도 통일 + hue 다양화.",
   pastel: "채도 30-55 + 명도 75-90. 부드러운 톤.",
-  cyberpunk: "네온 hue 집중 (마젠타·시안·라임·퍼플), S 85-100, L 40-65.",
 };
 
 const MATRIX = {
@@ -410,48 +409,6 @@ const MATRIX = {
       { h: 220, s: 10, l: 85, name: "Pearl Gray", role: "neutral" },
       { h: 195, s: 45, l: 75, name: "Ice Mint", role: "point" },
       { h: 155, s: 40, l: 78, name: "Pale Emerald", role: "point" },
-    ],
-  },
-  cyberpunk: {
-    spring_warm: [
-      { h: 320, s: 95, l: 55, name: "Neon Magenta", role: "base" },
-      { h: 340, s: 90, l: 55, name: "Hot Pink Neon", role: "base" },
-      { h: 50, s: 100, l: 55, name: "Acid Yellow", role: "accent" },
-      { h: 95, s: 90, l: 50, name: "Neon Lime", role: "accent" },
-      { h: 0, s: 0, l: 10, name: "Cyber Black", role: "neutral" },
-      { h: 285, s: 25, l: 25, name: "Dark Purple Gray", role: "neutral" },
-      { h: 15, s: 95, l: 50, name: "Neon Red", role: "point" },
-      { h: 290, s: 95, l: 60, name: "Vivid Violet Neon", role: "point" },
-    ],
-    summer_cool: [
-      { h: 185, s: 100, l: 50, name: "Neon Cyan", role: "base" },
-      { h: 195, s: 95, l: 50, name: "Electric Blue", role: "base" },
-      { h: 310, s: 95, l: 55, name: "Cyber Magenta", role: "accent" },
-      { h: 270, s: 90, l: 55, name: "Neon Purple", role: "accent" },
-      { h: 0, s: 0, l: 8, name: "Void Black", role: "neutral" },
-      { h: 220, s: 30, l: 20, name: "Midnight", role: "neutral" },
-      { h: 175, s: 100, l: 55, name: "Hyper Mint", role: "point" },
-      { h: 240, s: 95, l: 60, name: "Neon Indigo", role: "point" },
-    ],
-    autumn_warm: [
-      { h: 25, s: 100, l: 50, name: "Neon Orange", role: "base" },
-      { h: 350, s: 95, l: 50, name: "Cyber Red", role: "base" },
-      { h: 290, s: 90, l: 50, name: "Plasma Purple", role: "accent" },
-      { h: 60, s: 100, l: 55, name: "Toxic Yellow", role: "accent" },
-      { h: 0, s: 0, l: 12, name: "Charred Black", role: "neutral" },
-      { h: 20, s: 20, l: 25, name: "Ember Dark", role: "neutral" },
-      { h: 5, s: 95, l: 45, name: "Blood Red", role: "point" },
-      { h: 100, s: 95, l: 50, name: "Acid Green", role: "point" },
-    ],
-    winter_cool: [
-      { h: 215, s: 100, l: 50, name: "Hyper Blue", role: "base" },
-      { h: 240, s: 95, l: 55, name: "Neon Sapphire", role: "base" },
-      { h: 320, s: 100, l: 55, name: "Laser Pink", role: "accent" },
-      { h: 170, s: 100, l: 50, name: "Cryo Teal", role: "accent" },
-      { h: 0, s: 0, l: 5, name: "Absolute Black", role: "neutral" },
-      { h: 220, s: 50, l: 15, name: "Deep Midnight", role: "neutral" },
-      { h: 195, s: 100, l: 60, name: "Neon Ice", role: "point" },
-      { h: 280, s: 95, l: 60, name: "Synth Purple", role: "point" },
     ],
   },
 };

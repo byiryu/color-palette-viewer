@@ -55,7 +55,7 @@ open index.html
    ```bash
    cd /tmp/byiryu-studio-previews
    git add weather-outfit/design/
-   git -c user.name="byiryu" -c user.email="kj.lee2@smart-olive.co.kr" \
+   git -c user.name="byiryu" -c user.email="byiryustudio@gmail.com" \
        commit -m "release: weather-outfit (PALETI) v1.0 design preview"
    git push origin main
    ```

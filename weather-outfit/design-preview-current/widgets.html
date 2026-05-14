@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 위젯 시각화</title>
+<style>
+  :root {
+    --bg: #F8F5F0; --surface: #FFFFFF; --text: #1A1A1A; --textMuted: #7A7468;
+    --brand: #2C4E80; --border: #E8E5E0;
+  }
+  [data-theme="dark"] {
+    --bg: #1A1815; --surface: #2A2520; --text: #F0EDE8; --textMuted: #A89B8C;
+    --brand: #8FA9C9; --border: #3A352F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    background: #d8d8db; line-height: 1.5;
+    padding: 32px 24px; min-height: 100vh;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .breadcrumb { color: #555; font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: #2C4E80; text-decoration: none; }
+  header {
+    background: #fff; border-radius: 12px; padding: 20px 24px;
+    margin-bottom: 24px; display: flex; justify-content: space-between; align-items: baseline;
+  }
+  h1 { font-size: 24px; color: #1a1a1a; }
+  .theme-toggle { display: flex; gap: 6px; }
+  .theme-toggle button {
+    padding: 6px 14px; border: 1px solid #ccc; background: #fff;
+    color: #1a1a1a; border-radius: 999px; font-size: 12px; cursor: pointer;
+  }
+  .theme-toggle button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+
+  h2 { font-size: 16px; color: #555; text-transform: uppercase; letter-spacing: 1.2px; margin: 32px 0 14px; font-weight: 700; }
+  .section-note { background: #fff; padding: 12px 16px; border-radius: 8px; margin-bottom: 16px; font-size: 13px; color: #555; }
+
+  .widgets-row { display: flex; gap: 24px; flex-wrap: wrap; }
+  .widget-wrap { display: flex; flex-direction: column; gap: 8px; }
+  .widget-label { font-size: 11px; color: #555; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; text-align: center; }
+  .widget-size { font-size: 10px; color: #888; font-family: ui-monospace, monospace; text-align: center; }
+
+  /* Phone/screen frame */
+  .frame {
+    background: var(--bg);
+    border-radius: 16px;
+    overflow: hidden;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+    font-family: -apple-system, "Pretendard", sans-serif;
+  }
+
+  /* Lock Screen rectangular */
+  .lock-screen {
+    background: linear-gradient(135deg, #2a3a4a, #1a2530);
+    padding: 24px 16px;
+    border-radius: 24px;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.3);
+    color: #fff;
+  }
+  .lock-time { font-size: 64px; font-weight: 100; text-align: center; margin-bottom: 4px; line-height: 1; }
+  .lock-date { font-size: 13px; text-align: center; opacity: 0.9; margin-bottom: 24px; }
+  .lock-widget {
+    background: rgba(255,255,255,0.18);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-radius: 8px;
+    padding: 7px 12px;
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 158px;
+    margin: 0 auto;
+  }
+  .lock-widget .chips { display: flex; gap: 3px; margin-left: auto; }
+  .lock-widget .chip { width: 10px; height: 10px; border-radius: 2px; border: 1px solid rgba(255,255,255,0.3); }
+  .lock-widget .chip.empty { background: transparent; border-style: dashed; }
+
+  /* iOS Home Small (170×170) */
+  .widget-small {
+    width: 170px; height: 170px;
+    padding: 14px 12px;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .ws-location { font-size: 14px; font-weight: 700; line-height: 1.2; }
+  .ws-weather { font-size: 10px; color: var(--textMuted); margin-top: 1px; margin-bottom: 10px; }
+  .ws-chips {
+    display: grid; grid-template-columns: 1fr 1fr; gap: 6px;
+    flex: 1;
+  }
+  .ws-chip {
+    border-radius: 6px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .ws-chip.empty {
+    background: transparent !important;
+    border: 1px dashed var(--textMuted);
+  }
+
+  /* iOS Home Medium (350×170) */
+  .widget-medium {
+    width: 350px; height: 170px;
+    padding: 14px 16px;
+    display: flex; flex-direction: column;
+    background: var(--bg);
+    color: var(--text);
+  }
+  .wm-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .wm-location { font-size: 16px; font-weight: 700; }
+  .wm-refresh { font-size: 13px; color: var(--textMuted); }
+  .wm-weather { font-size: 11px; color: var(--textMuted); margin-bottom: 14px; }
+  .wm-items {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px;
+    flex: 1;
+  }
+  .wm-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .wm-item .chip {
+    width: 36px; height: 36px; border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .wm-item .chip.empty {
+    background: transparent !important;
+    border: 1px dashed var(--textMuted);
+  }
+  .wm-item .role { font-size: 9px; color: var(--textMuted); text-transform: uppercase; font-weight: 600; }
+  .wm-item .clothing { font-size: 10px; font-weight: 500; }
+
+  /* Android Glance 2x2 (~158×158) */
+  .widget-glance-small {
+    width: 158px; height: 158px;
+    padding: 14px 12px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex; flex-direction: column;
+  }
+  .gs-location { font-size: 14px; font-weight: 700; line-height: 1.2; }
+  .gs-weather { font-size: 10px; color: var(--textMuted); margin-top: 1px; margin-bottom: 14px; }
+  .gs-chips { display: flex; gap: 5px; flex: 1; align-items: center; }
+  .gs-chip {
+    flex: 1; height: 24px; border-radius: 5px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .gs-chip.empty {
+    background: transparent !important;
+    border: 1px dashed var(--textMuted);
+  }
+  .gs-refresh {
+    margin-top: auto; text-align: right; font-size: 14px; color: var(--brand);
+  }
+
+  /* Android Glance 4x2 (~344×158) */
+  .widget-glance-medium {
+    width: 344px; height: 158px;
+    padding: 14px 16px;
+    background: var(--bg);
+    color: var(--text);
+    display: flex; flex-direction: column;
+  }
+  .gm-header { display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2px; }
+  .gm-location { font-size: 16px; font-weight: 700; }
+  .gm-refresh { font-size: 13px; color: var(--textMuted); }
+  .gm-weather { font-size: 11px; color: var(--textMuted); margin-bottom: 14px; }
+  .gm-items {
+    display: grid; grid-template-columns: repeat(4, 1fr); gap: 8px;
+    flex: 1;
+  }
+  .gm-item { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .gm-item .chip {
+    width: 32px; height: 32px; border-radius: 7px;
+    border: 1px solid rgba(0,0,0,0.08);
+  }
+  .gm-item .chip.empty {
+    background: transparent !important;
+    border: 1px dashed var(--textMuted);
+  }
+  .gm-item .role { font-size: 9px; color: var(--textMuted); text-transform: uppercase; font-weight: 600; }
+  .gm-item .clothing { font-size: 10px; }
+
+  .data-source {
+    margin-top: 32px;
+    padding: 16px 18px;
+    background: #fff;
+    border-radius: 8px;
+    font-size: 13px;
+    color: #555;
+  }
+  .data-source code {
+    background: #f0f0f3;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, monospace;
+    font-size: 12px;
+  }
+</style>
+</head>
+<body data-theme="light">
+<div class="container">
+  <div class="breadcrumb"><a href="index.html">← 인덱스</a></div>
+
+  <header>
+    <h1>위젯 시각화</h1>
+    <div class="theme-toggle">
+      <button class="active" data-theme-btn="light">Light</button>
+      <button data-theme-btn="dark">Dark</button>
+    </div>
+  </header>
+
+  <h2>1. iOS Lock Screen 위젯</h2>
+  <div class="section-note">
+    iOS는 잠금 화면 위젯에 모노톤 강제. 컬러 칩은 lightness로만 표현. 흰 반투명 배경 기반.
+  </div>
+  <div class="lock-screen">
+    <div class="lock-time">9:41</div>
+    <div class="lock-date">5월 11일 일요일</div>
+    <div class="lock-widget">
+      <span>서울 18°</span>
+      <div class="chips">
+        <div class="chip empty"></div>
+        <div class="chip" style="background:#F8F8F2;"></div>
+        <div class="chip" style="background:#2C4E80;"></div>
+        <div class="chip" style="background:#D2B48C;"></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>2. iOS Home — Small (170×170)</h2>
+  <div class="widgets-row">
+    <div class="widget-wrap">
+      <div class="widget-label">Small (systemSmall)</div>
+      <div class="frame">
+        <div class="widget-small">
+          <div class="ws-location">서울 ↻</div>
+          <div class="ws-weather">18° 맑음</div>
+          <div class="ws-chips">
+            <div class="ws-chip empty"></div>
+            <div class="ws-chip" style="background:#F8F8F2;"></div>
+            <div class="ws-chip" style="background:#2C4E80;"></div>
+            <div class="ws-chip" style="background:#D2B48C;"></div>
+          </div>
+        </div>
+      </div>
+      <div class="widget-size">170 × 170 pt</div>
+    </div>
+  </div>
+
+  <h2>3. iOS Home — Medium (350×170)</h2>
+  <div class="widgets-row">
+    <div class="widget-wrap">
+      <div class="widget-label">Medium (systemMedium)</div>
+      <div class="frame">
+        <div class="widget-medium">
+          <div class="wm-header">
+            <div class="wm-location">서울</div>
+            <div class="wm-refresh">↻</div>
+          </div>
+          <div class="wm-weather">18°C 맑음 · 미세먼지 보통</div>
+          <div class="wm-items">
+            <div class="wm-item">
+              <div class="chip empty"></div>
+              <div class="role">외투</div>
+              <div class="clothing">—</div>
+            </div>
+            <div class="wm-item">
+              <div class="chip" style="background:#F8F8F2;"></div>
+              <div class="role">상의</div>
+              <div class="clothing">긴팔</div>
+            </div>
+            <div class="wm-item">
+              <div class="chip" style="background:#2C4E80;"></div>
+              <div class="role">하의</div>
+              <div class="clothing">청바지</div>
+            </div>
+            <div class="wm-item">
+              <div class="chip" style="background:#D2B48C;"></div>
+              <div class="role">신발</div>
+              <div class="clothing">스니커즈</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="widget-size">350 × 170 pt</div>
+    </div>
+  </div>
+
+  <h2>4. Android Glance — Small (2×2)</h2>
+  <div class="widgets-row">
+    <div class="widget-wrap">
+      <div class="widget-label">Glance Small</div>
+      <div class="frame">
+        <div class="widget-glance-small">
+          <div class="gs-location">서울 18°</div>
+          <div class="gs-weather">맑음</div>
+          <div class="gs-chips">
+            <div class="gs-chip empty"></div>
+            <div class="gs-chip" style="background:#F8F8F2;"></div>
+            <div class="gs-chip" style="background:#2C4E80;"></div>
+            <div class="gs-chip" style="background:#D2B48C;"></div>
+          </div>
+          <div class="gs-refresh">↻</div>
+        </div>
+      </div>
+      <div class="widget-size">158 × 158 dp</div>
+    </div>
+  </div>
+
+  <h2>5. Android Glance — Medium (4×2)</h2>
+  <div class="widgets-row">
+    <div class="widget-wrap">
+      <div class="widget-label">Glance Medium</div>
+      <div class="frame">
+        <div class="widget-glance-medium">
+          <div class="gm-header">
+            <div class="gm-location">서울</div>
+            <div class="gm-refresh">↻</div>
+          </div>
+          <div class="gm-weather">18°C 맑음 · 미세먼지 보통</div>
+          <div class="gm-items">
+            <div class="gm-item">
+              <div class="chip empty"></div>
+              <div class="role">외투</div>
+              <div class="clothing">—</div>
+            </div>
+            <div class="gm-item">
+              <div class="chip" style="background:#F8F8F2;"></div>
+              <div class="role">상의</div>
+              <div class="clothing">긴팔</div>
+            </div>
+            <div class="gm-item">
+              <div class="chip" style="background:#2C4E80;"></div>
+              <div class="role">하의</div>
+              <div class="clothing">청바지</div>
+            </div>
+            <div class="gm-item">
+              <div class="chip" style="background:#D2B48C;"></div>
+              <div class="role">신발</div>
+              <div class="clothing">스니커즈</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="widget-size">344 × 158 dp</div>
+    </div>
+  </div>
+
+  <div class="data-source">
+    <b>데이터 소스:</b> V4-2a Case 1 — 봄 18°C 맑음 / 남 / original 추천<br>
+    <b>저장 위치:</b> <code>App Group</code> (iOS) / <code>SharedPreferences</code> (Android)<br>
+    <b>갱신 주기:</b> 시간 기반 2~3시간 (백그라운드 GPS 회피) + 메인 앱 새로고침 시 자동 반영
+  </div>
+</div>
+
+<script>
+document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+  btn.onclick = () => {
+    document.body.dataset.theme = btn.dataset.themeBtn;
+    document.querySelectorAll("[data-theme-btn]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
+</script>
+</body>
+</html>

@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 디자인 프리뷰 (로컬)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #F8F5F0;
+    color: #1A1A1A;
+    line-height: 1.5;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  header { margin-bottom: 36px; }
+  h1 { font-size: 32px; margin-bottom: 8px; letter-spacing: -0.5px; }
+  .tagline { color: #7A7468; font-size: 16px; }
+
+  .warning {
+    background: #FFF8E1;
+    border: 1px solid #FFE082;
+    padding: 14px 18px;
+    border-radius: 12px;
+    margin-bottom: 28px;
+    font-size: 13px;
+    color: #555;
+  }
+  .warning b { color: #1a1a1a; }
+
+  h2 {
+    font-size: 16px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 32px 0 14px;
+  }
+
+  .cards { display: grid; grid-template-columns: 1fr; gap: 14px; }
+  @media (min-width: 640px) { .cards { grid-template-columns: 1fr 1fr; } }
+
+  .card {
+    background: #FFFFFF;
+    border: 1px solid #E8E5E0;
+    border-radius: 14px;
+    padding: 22px;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+    transition: all 0.15s;
+  }
+  .card:hover {
+    border-color: #2C4E80;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.06);
+  }
+  .card-title { font-size: 18px; font-weight: 700; margin-bottom: 6px; }
+  .card-description { font-size: 13px; color: #7A7468; margin-bottom: 12px; line-height: 1.6; }
+  .card-tag {
+    display: inline-block;
+    font-size: 11px;
+    background: #F8F5F0;
+    padding: 3px 10px;
+    border-radius: 999px;
+    color: #7A7468;
+    margin-right: 6px;
+  }
+  .card-arrow { font-size: 14px; color: #2C4E80; margin-top: 8px; font-weight: 600; }
+
+  .meta-section {
+    margin-top: 36px;
+    padding: 20px 22px;
+    background: #FFFFFF;
+    border: 1px solid #E8E5E0;
+    border-radius: 12px;
+    font-size: 13px;
+    color: #555;
+  }
+  .meta-section h3 { font-size: 14px; margin-bottom: 8px; color: #1A1A1A; }
+  .meta-section code {
+    background: #F8F5F0;
+    padding: 1px 6px;
+    border-radius: 4px;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-size: 12px;
+  }
+  .meta-section ul { margin: 6px 0 0 20px; }
+  .meta-section li { margin-bottom: 3px; }
+
+  footer { margin-top: 60px; padding-top: 16px; border-top: 1px solid #E8E5E0; color: #888; font-size: 12px; }
+</style>
+</head>
+<body>
+<div class="container">
+  <header>
+    <h1>PALETI</h1>
+    <p class="tagline">디자인 프리뷰 (로컬) · weather-outfit · 2026-05-11</p>
+  </header>
+
+  <div class="warning">
+    🔒 <b>로컬 전용</b> — 이 디자인 자료는 출시 전엔 공개되지 않습니다.
+    push 금지. 출시 시(M6/M7) <code>byiryu-studio-previews/weather-outfit/design/</code> 로 이전.
+    상세는 <code>README.md</code> 참조.
+  </div>
+
+  <h2>시각화 자료</h2>
+  <div class="cards">
+
+    <a href="design-system.html" class="card">
+      <div class="card-title">디자인 시스템</div>
+      <div class="card-description">컬러 토큰·타이포 스케일·스페이싱·라디우스·elevation 한 페이지에 모두 시각화 (Storybook 풍)</div>
+      <div>
+        <span class="card-tag">9 컬러 토큰</span>
+        <span class="card-tag">9 타이포</span>
+        <span class="card-tag">Light/Dark</span>
+      </div>
+      <div class="card-arrow">열기 →</div>
+    </a>
+
+    <a href="components.html" class="card">
+      <div class="card-title">컴포넌트 카탈로그</div>
+      <div class="card-description">버튼·카드·컬러 칩·태그·input 컴포넌트의 모든 변종을 한눈에 비교</div>
+      <div>
+        <span class="card-tag">5 카테고리</span>
+        <span class="card-tag">12+ 변종</span>
+        <span class="card-tag">Light/Dark</span>
+      </div>
+      <div class="card-arrow">열기 →</div>
+    </a>
+
+    <a href="prototype.html" class="card">
+      <div class="card-title">인터랙티브 프로토타입 ★</div>
+      <div class="card-description">8개 화면을 실제 토큰으로 mockup. 클릭으로 화면 전환, 사용 흐름 따라가기</div>
+      <div>
+        <span class="card-tag">8 화면</span>
+        <span class="card-tag">클릭 전환</span>
+        <span class="card-tag">Light/Dark</span>
+      </div>
+      <div class="card-arrow">열기 →</div>
+    </a>
+
+    <a href="widgets.html" class="card">
+      <div class="card-title">위젯 시각화</div>
+      <div class="card-description">iOS Lock + Home(소·중) + Android Glance(소·중). 실제 V4-2a Case 1 데이터 적용</div>
+      <div>
+        <span class="card-tag">5 위젯</span>
+        <span class="card-tag">실데이터</span>
+        <span class="card-tag">Light/Dark</span>
+      </div>
+      <div class="card-arrow">열기 →</div>
+    </a>
+
+  </div>
+
+  <div class="meta-section">
+    <h3>토큰 출처</h3>
+    <p><code>_docs/design-briefs/weather-outfit/design-system.md</code></p>
+    <p style="margin-top: 8px;"><b>컬러:</b> Warm Minimal Y1 (인디고 #2C4E80) — 잠정, 재검토 가능</p>
+    <p><b>폰트:</b> Pretendard Variable (OFL)</p>
+  </div>
+
+  <div class="meta-section">
+    <h3>로컬 보기 방법</h3>
+    <ul>
+      <li>권장: <code>python3 -m http.server 8000</code> → <a href="http://localhost:8000" style="color:#2C4E80;">localhost:8000</a></li>
+      <li>또는 VSCode Live Server 확장</li>
+      <li>또는 <code>open index.html</code> (file:// 일부 제약 있음)</li>
+    </ul>
+  </div>
+
+  <footer>
+    <p>출시 시점 이전 절차는 <code>README.md</code> 참조.</p>
+  </footer>
+</div>
+</body>
+</html>

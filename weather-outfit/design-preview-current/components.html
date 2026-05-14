@@ -1,0 +1,376 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 컴포넌트 카탈로그</title>
+<style>
+  :root {
+    --bg: #F8F5F0; --surface: #FFFFFF; --text: #1A1A1A; --textMuted: #7A7468;
+    --brand: #2C4E80; --border: #E8E5E0; --error: #FF6B6B; --warning: #FFD43B;
+  }
+  [data-theme="dark"] {
+    --bg: #1A1815; --surface: #2A2520; --text: #F0EDE8; --textMuted: #A89B8C;
+    --brand: #8FA9C9; --border: #3A352F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 32px 24px; min-height: 100vh; transition: background 0.2s;
+  }
+  .container { max-width: 1100px; margin: 0 auto; }
+  .breadcrumb { color: var(--textMuted); font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: var(--brand); text-decoration: none; }
+  header { border-bottom: 2px solid var(--text); padding-bottom: 16px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: baseline; }
+  h1 { font-size: 28px; }
+  .theme-toggle { display: flex; gap: 6px; }
+  .theme-toggle button {
+    padding: 6px 14px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); border-radius: 999px; font-size: 12px; cursor: pointer;
+  }
+  .theme-toggle button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  h2 {
+    font-size: 16px; color: var(--textMuted); text-transform: uppercase;
+    letter-spacing: 1.2px; margin: 36px 0 14px; font-weight: 700;
+  }
+
+  .section {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 24px; margin-bottom: 20px;
+  }
+  .section-title { font-size: 18px; font-weight: 700; margin-bottom: 16px; }
+  .variant-row {
+    display: grid; grid-template-columns: 220px 1fr; gap: 24px;
+    padding: 16px 0; border-bottom: 1px solid var(--border); align-items: center;
+  }
+  .variant-row:last-child { border-bottom: none; }
+  .variant-meta { font-size: 11px; color: var(--textMuted); font-family: ui-monospace, monospace; }
+  .variant-meta b { color: var(--text); font-family: inherit; font-size: 13px; font-weight: 600; display: block; margin-bottom: 2px; }
+  .variant-meta .desc { margin-top: 6px; font-family: inherit; color: var(--textMuted); font-size: 11px; line-height: 1.4; }
+
+  /* Buttons */
+  .btn-primary {
+    background: var(--brand); color: var(--bg); padding: 12px 16px;
+    border-radius: 12px; font-weight: 500; font-size: 16px; border: none; cursor: pointer;
+  }
+  .btn-secondary {
+    background: transparent; color: var(--text); padding: 12px 16px;
+    border: 1px solid var(--border); border-radius: 12px; font-weight: 500; font-size: 16px; cursor: pointer;
+  }
+  .btn-text {
+    background: transparent; color: var(--brand); padding: 8px 12px;
+    border: none; font-weight: 500; font-size: 16px; cursor: pointer;
+  }
+  .btn-disabled { opacity: 0.4; pointer-events: none; }
+
+  /* Cards */
+  .card-default {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px; max-width: 320px;
+  }
+  [data-theme="light"] .card-default { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  [data-theme="dark"] .card-default { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+
+  .card-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; max-width: 320px;
+    display: flex; align-items: center; gap: 12px;
+  }
+  [data-theme="light"] .card-item { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  [data-theme="dark"] .card-item { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+
+  /* Color chips */
+  .chip-color {
+    border: 1px solid rgba(0,0,0,0.08); border-radius: 8px;
+  }
+  .chip-color.small { width: 32px; height: 32px; border-radius: 6px; }
+  .chip-color.medium { width: 48px; height: 48px; }
+  .chip-color.large { width: 60px; height: 60px; border-radius: 10px; }
+  .chip-empty {
+    background: repeating-linear-gradient(45deg, var(--border) 0 6px, transparent 6px 12px) !important;
+    border: 1px dashed var(--textMuted) !important;
+  }
+
+  /* Tags */
+  .chip-tag-neutral {
+    background: var(--border); color: var(--textMuted);
+    padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    display: inline-block;
+  }
+  .chip-tag-brand {
+    background: var(--brand); color: var(--bg);
+    padding: 4px 12px; border-radius: 999px; font-size: 13px; font-weight: 500;
+    display: inline-block;
+  }
+
+  /* Input */
+  .input-text {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 12px 14px; font-size: 16px;
+    color: var(--text); width: 100%; max-width: 320px; outline: none;
+  }
+  .input-text:focus { border-color: var(--brand); }
+  .input-text::placeholder { color: var(--textMuted); }
+
+  /* List item */
+  .list-item {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 12px 14px; max-width: 320px;
+    display: flex; align-items: center; justify-content: space-between;
+    cursor: pointer; transition: border-color 0.15s;
+  }
+  .list-item:hover { border-color: var(--brand); }
+  .list-item.selected { border-color: var(--brand); border-width: 2px; }
+  .list-item .label { font-size: 15px; font-weight: 500; }
+  .list-item .check { color: var(--brand); font-weight: 700; }
+
+  /* Toggle */
+  .toggle {
+    display: inline-flex; align-items: center; gap: 8px; cursor: pointer;
+  }
+  .toggle-switch {
+    width: 44px; height: 26px; background: var(--border);
+    border-radius: 999px; position: relative; transition: background 0.15s;
+  }
+  .toggle-switch::after {
+    content: ''; width: 22px; height: 22px; background: #FFFFFF;
+    border-radius: 999px; position: absolute; top: 2px; left: 2px;
+    transition: left 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .toggle.on .toggle-switch { background: var(--brand); }
+  .toggle.on .toggle-switch::after { left: 20px; }
+</style>
+</head>
+<body data-theme="light">
+<div class="container">
+  <div class="breadcrumb"><a href="index.html">← 인덱스</a></div>
+
+  <header>
+    <h1>컴포넌트 카탈로그</h1>
+    <div class="theme-toggle">
+      <button class="active" data-theme-btn="light">Light</button>
+      <button data-theme-btn="dark">Dark</button>
+    </div>
+  </header>
+
+  <h2>1. 버튼</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>button_primary</b>
+        주 액션 (CTA)
+        <div class="desc">bg: brand · text: bg · padding 16/12 · radius_12 · medium_16</div>
+      </div>
+      <div><button class="btn-primary">컬러 테마 변경</button></div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>button_secondary</b>
+        부 액션
+        <div class="desc">bg: 투명 · border + text + padding 동일</div>
+      </div>
+      <div><button class="btn-secondary">취소</button></div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>button_text</b>
+        텍스트 액션
+        <div class="desc">bg: 투명 · color: brand · padding 12/8</div>
+      </div>
+      <div><button class="btn-text">나중에 설정</button></div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>button_primary (disabled)</b>
+        선택 전 비활성
+        <div class="desc">opacity 0.4 + pointer-events none</div>
+      </div>
+      <div><button class="btn-primary btn-disabled">다음 →</button></div>
+    </div>
+  </div>
+
+  <h2>2. 카드</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>card_default</b>
+        일반 카드
+        <div class="desc">bg: surface · padding spacing_12 · radius_12 · elevation_1</div>
+      </div>
+      <div>
+        <div class="card-default">
+          <div style="font-weight:600; font-size:15px; margin-bottom:4px;">컬러 테마</div>
+          <div style="font-size:13px; color:var(--textMuted);">오리지널 · 모노크롬 · 팝 · 파스텔 + 6 more</div>
+        </div>
+      </div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>card_item</b>
+        메인 화면 추천 아이템
+        <div class="desc">chip + 텍스트 가로 배치</div>
+      </div>
+      <div>
+        <div class="card-item">
+          <div class="chip-color medium" style="background:#F8F8F2;"></div>
+          <div>
+            <div style="font-size:11px; color:var(--textMuted); text-transform:uppercase; font-weight:600;">상의</div>
+            <div style="font-weight:600; font-size:15px;">오프 화이트 #F8F8F2</div>
+            <div style="font-size:13px; color:var(--textMuted);">면 긴팔티</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>3. 컬러 칩 (콘텐츠)</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>chip_color_small</b>
+        32 × 32 · radius_6
+        <div class="desc">위젯 · 라벨 옆 작은 표시</div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <div class="chip-color small" style="background:#F8F8F2;"></div>
+        <div class="chip-color small" style="background:#2C4E80;"></div>
+        <div class="chip-color small" style="background:#D2B48C;"></div>
+        <div class="chip-color small chip-empty"></div>
+      </div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>chip_color_medium</b>
+        48 × 48 · radius_8
+        <div class="desc">메인 화면 카드 (디폴트)</div>
+      </div>
+      <div style="display:flex; gap:8px;">
+        <div class="chip-color medium" style="background:#F8F8F2;"></div>
+        <div class="chip-color medium" style="background:#2C4E80;"></div>
+        <div class="chip-color medium" style="background:#D2B48C;"></div>
+        <div class="chip-color medium chip-empty"></div>
+      </div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>chip_color_large</b>
+        60 × 60 · radius_10
+        <div class="desc">선택 / 상세 화면 (v1.5)</div>
+      </div>
+      <div style="display:flex; gap:10px;">
+        <div class="chip-color large" style="background:#F8F8F2;"></div>
+        <div class="chip-color large" style="background:#2C4E80;"></div>
+        <div class="chip-color large" style="background:#D2B48C;"></div>
+      </div>
+    </div>
+  </div>
+
+  <h2>4. 태그 · 라벨</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>chip_tag_neutral</b>
+        무드 · 정보 태그
+        <div class="desc">bg: border · color: textMuted · pill</div>
+      </div>
+      <div>
+        <span class="chip-tag-neutral">톤온톤 · 봄 따뜻함</span>
+      </div>
+    </div>
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>chip_tag_brand</b>
+        강조 태그
+        <div class="desc">bg: brand · color: bg · pill</div>
+      </div>
+      <div>
+        <span class="chip-tag-brand">새로운 추천 ✦</span>
+      </div>
+    </div>
+  </div>
+
+  <h2>5. 입력 필드</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>input_text</b>
+        텍스트 입력
+        <div class="desc">bg: surface · border 1px · radius_8 · focus: brand</div>
+      </div>
+      <div>
+        <input class="input-text" placeholder="🔍 도시 검색">
+      </div>
+    </div>
+  </div>
+
+  <h2>6. 리스트 아이템 (마이페이지·도시 선택)</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>list_item</b>
+        기본 리스트 (탭 가능)
+        <div class="desc">hover/focus 시 border brand</div>
+      </div>
+      <div style="display:flex; flex-direction:column; gap:8px;">
+        <div class="list-item selected">
+          <span class="label">오리지널</span>
+          <span class="check">✓</span>
+        </div>
+        <div class="list-item">
+          <span class="label">모노크롬</span>
+        </div>
+        <div class="list-item">
+          <span class="label">팝</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>7. 토글</h2>
+  <div class="section">
+    <div class="variant-row">
+      <div class="variant-meta">
+        <b>toggle</b>
+        on/off 스위치
+        <div class="desc">마이페이지 알림·다크모드 등</div>
+      </div>
+      <div style="display:flex; gap:24px; align-items:center;">
+        <div class="toggle on" onclick="this.classList.toggle('on')">
+          <span>GPS 자동</span>
+          <div class="toggle-switch"></div>
+        </div>
+        <div class="toggle" onclick="this.classList.toggle('on')">
+          <span>도시 직접 선택</span>
+          <div class="toggle-switch"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <h2>8. 시스템 컬러 활용 예</h2>
+  <div class="section" style="display: flex; gap: 12px; flex-wrap: wrap;">
+    <div style="background:#FFEBEE; color:#FF6B6B; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;">
+      ✕ 인터넷에 연결되지 않아요
+    </div>
+    <div style="background:#FFF8E1; color:#1a1a1a; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;">
+      ⚠️ 미세먼지 매우 나쁨 · 마스크 권장
+    </div>
+    <div style="background:#E8F5E9; color:#2E7D32; padding: 10px 14px; border-radius: 8px; font-size: 13px; font-weight: 500;">
+      ✓ 추천 갱신 완료
+    </div>
+  </div>
+</div>
+
+<script>
+document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+  btn.onclick = () => {
+    document.body.dataset.theme = btn.dataset.themeBtn;
+    document.querySelectorAll("[data-theme-btn]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
+</script>
+</body>
+</html>

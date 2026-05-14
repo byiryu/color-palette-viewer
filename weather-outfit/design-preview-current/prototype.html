@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 인터랙티브 프로토타입</title>
+<style>
+  :root {
+    --bg: #F8F5F0; --surface: #FFFFFF; --text: #1A1A1A; --textMuted: #7A7468;
+    --brand: #2C4E80; --border: #E8E5E0; --error: #FF6B6B; --warning: #FFD43B;
+  }
+  [data-theme="dark"] {
+    --bg: #1A1815; --surface: #2A2520; --text: #F0EDE8; --textMuted: #A89B8C;
+    --brand: #8FA9C9; --border: #3A352F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    background: #d8d8db; line-height: 1.5;
+    padding: 24px; min-height: 100vh;
+  }
+  .layout {
+    max-width: 1200px; margin: 0 auto;
+    display: grid; grid-template-columns: 240px 1fr; gap: 24px;
+    align-items: start;
+  }
+  @media (max-width: 900px) {
+    .layout { grid-template-columns: 1fr; }
+  }
+
+  /* Sidebar */
+  .sidebar {
+    background: #fff; border-radius: 12px; padding: 20px; position: sticky; top: 24px;
+  }
+  .breadcrumb { font-size: 13px; color: #555; margin-bottom: 14px; }
+  .breadcrumb a { color: #2C4E80; text-decoration: none; }
+  .sidebar h2 { font-size: 13px; font-weight: 700; color: #555; text-transform: uppercase; letter-spacing: 1px; margin: 14px 0 10px; }
+  .nav-list { list-style: none; display: flex; flex-direction: column; gap: 4px; }
+  .nav-item {
+    padding: 9px 12px; border-radius: 8px; cursor: pointer;
+    font-size: 13px; color: #1a1a1a; display: flex; align-items: center; gap: 8px;
+    border: 1px solid transparent;
+  }
+  .nav-item:hover { background: #f5f5f5; }
+  .nav-item.active { background: #1a1a1a; color: #fff; }
+  .nav-item .num { font-size: 11px; opacity: 0.6; font-family: ui-monospace, monospace; min-width: 18px; }
+  .theme-toggle { display: flex; gap: 6px; margin-top: 14px; }
+  .theme-toggle button {
+    flex: 1; padding: 7px; border: 1px solid #ccc; background: #fff;
+    color: #1a1a1a; border-radius: 8px; font-size: 12px; cursor: pointer;
+  }
+  .theme-toggle button.active { background: #1a1a1a; color: #fff; border-color: #1a1a1a; }
+  .sidebar-meta { margin-top: 16px; padding-top: 14px; border-top: 1px solid #eee; font-size: 11px; color: #888; line-height: 1.6; }
+
+  /* Main */
+  .main {
+    background: #fff; border-radius: 16px; padding: 32px;
+    min-height: 600px;
+  }
+  .screen-header {
+    border-bottom: 1px solid #eee; padding-bottom: 14px; margin-bottom: 24px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .screen-title { font-size: 22px; font-weight: 700; }
+  .screen-id { font-size: 12px; color: #888; font-family: ui-monospace, monospace; }
+  .screen-description { font-size: 14px; color: #555; margin-bottom: 20px; line-height: 1.6; }
+
+  /* Phone frame */
+  .phone-stage { display: flex; justify-content: center; padding: 24px 0; }
+  .phone-frame {
+    width: 320px; aspect-ratio: 9/19.5;
+    background: #1a1a1a; border-radius: 32px; padding: 8px;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.2);
+  }
+  .phone-screen {
+    background: var(--bg); color: var(--text);
+    border-radius: 26px; height: 100%; overflow-y: auto; overflow-x: hidden;
+    display: flex; flex-direction: column; position: relative;
+    transition: background 0.2s, color 0.2s;
+  }
+
+  /* Status bar */
+  .status-bar {
+    height: 36px; display: flex; justify-content: space-between; align-items: center;
+    padding: 0 22px; font-size: 13px; font-weight: 600;
+    color: var(--text);
+  }
+
+  .screen-body {
+    flex: 1; padding: 8px 16px 16px;
+    display: flex; flex-direction: column;
+  }
+
+  /* Common */
+  .center-vh { flex: 1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 24px; }
+  .btn-primary {
+    background: var(--brand); color: var(--bg); padding: 13px 16px;
+    border-radius: 12px; font-weight: 500; font-size: 16px; border: none; cursor: pointer; width: 100%;
+  }
+  .btn-secondary {
+    background: transparent; color: var(--text); padding: 13px 16px;
+    border: 1px solid var(--border); border-radius: 12px; font-weight: 500; font-size: 16px; cursor: pointer; width: 100%;
+  }
+  .btn-text {
+    background: transparent; color: var(--textMuted); padding: 8px;
+    border: none; font-size: 14px; cursor: pointer; width: 100%; text-align: center;
+  }
+  .btn-disabled { opacity: 0.35; pointer-events: none; }
+
+  /* Splash */
+  .splash {
+    flex: 1; display: flex; justify-content: center; align-items: center;
+  }
+  .splash-logo { font-size: 36px; font-weight: 700; letter-spacing: -1px; }
+
+  /* Onboarding gender */
+  .ob-title { font-size: 24px; font-weight: 700; margin-top: 30px; margin-bottom: 8px; }
+  .ob-subtitle { font-size: 14px; color: var(--textMuted); margin-bottom: 28px; }
+  .ob-gender-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 24px; margin-bottom: 12px; cursor: pointer;
+    text-align: center; transition: border-color 0.15s;
+  }
+  .ob-gender-card.selected { border-color: var(--brand); border-width: 2px; padding: 23px; }
+  .ob-gender-card .icon { font-size: 32px; margin-bottom: 6px; }
+  .ob-gender-card .label { font-size: 16px; font-weight: 600; }
+
+  /* Onboarding location */
+  .ob-icon-large { font-size: 56px; text-align: center; margin-top: 40px; margin-bottom: 18px; }
+  .ob-info-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; padding: 14px 16px; margin: 16px 0 24px;
+    font-size: 13px; color: var(--textMuted); line-height: 1.5;
+  }
+
+  /* Main screen */
+  .main-header {
+    padding: 14px 4px 0; display: flex; justify-content: space-between; align-items: flex-start;
+  }
+  .main-location { font-size: 28px; font-weight: 700; line-height: 1.1; letter-spacing: -0.3px; }
+  .main-weather { font-size: 14px; color: var(--textMuted); margin-top: 4px; }
+  .main-refresh-link { font-size: 13px; color: var(--brand); cursor: pointer; }
+  .main-settings { font-size: 22px; cursor: pointer; }
+
+  .mood-tag {
+    align-self: flex-start;
+    background: var(--border); color: var(--textMuted);
+    padding: 5px 12px; border-radius: 999px;
+    font-size: 12px; font-weight: 500; margin-top: 16px;
+  }
+
+  .items-list { margin-top: 16px; display: flex; flex-direction: column; gap: 10px; }
+  .item-card {
+    background: var(--surface); border-radius: 12px;
+    padding: 12px 14px; display: flex; gap: 12px; align-items: center;
+  }
+  [data-theme="light"] .item-card { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  [data-theme="dark"] .item-card { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  .item-chip {
+    width: 48px; height: 48px; border-radius: 8px;
+    border: 1px solid rgba(0,0,0,0.08); flex-shrink: 0;
+  }
+  .item-chip.empty {
+    background: repeating-linear-gradient(45deg, var(--border) 0 6px, transparent 6px 12px) !important;
+    border: 1px dashed var(--textMuted);
+  }
+  .item-info { flex: 1; }
+  .item-role { font-size: 10px; color: var(--textMuted); text-transform: uppercase; font-weight: 600; margin-bottom: 2px; }
+  .item-name { font-size: 15px; font-weight: 600; }
+  .item-clothing { font-size: 12px; color: var(--textMuted); margin-top: 1px; }
+
+  .cta-area { margin-top: 18px; padding-top: 4px; }
+
+  /* My page */
+  .myp-back {
+    display: inline-block; padding: 8px 0; font-size: 18px; cursor: pointer;
+  }
+  .myp-title { font-size: 22px; font-weight: 700; margin-bottom: 16px; }
+  .myp-section { margin-bottom: 22px; }
+  .myp-section-h { font-size: 11px; color: var(--textMuted); text-transform: uppercase; font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px; }
+  .myp-list-row {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; font-size: 14px;
+    display: flex; justify-content: space-between; align-items: center;
+    margin-bottom: 6px; cursor: pointer;
+  }
+  .myp-list-row.selected { border-color: var(--brand); }
+  .myp-list-row .check { color: var(--brand); font-weight: 700; }
+  .myp-toggle {
+    display: flex; align-items: center; justify-content: space-between; padding: 4px 0;
+  }
+  .myp-switch {
+    width: 40px; height: 24px; background: var(--border);
+    border-radius: 999px; position: relative; cursor: pointer;
+  }
+  .myp-switch::after {
+    content: ''; width: 20px; height: 20px; background: #FFFFFF;
+    border-radius: 999px; position: absolute; top: 2px; left: 2px;
+    transition: left 0.15s; box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+  }
+  .myp-switch.on { background: var(--brand); }
+  .myp-switch.on::after { left: 18px; }
+  .myp-radio { display: flex; gap: 12px; margin-top: 6px; }
+  .myp-radio-item {
+    display: flex; align-items: center; gap: 6px; font-size: 13px; cursor: pointer;
+  }
+  .myp-radio-dot {
+    width: 16px; height: 16px; border-radius: 999px;
+    border: 1.5px solid var(--textMuted);
+  }
+  .myp-radio-item.selected .myp-radio-dot {
+    border-color: var(--brand);
+    border-width: 5px;
+  }
+  .myp-account { font-size: 11px; color: var(--textMuted); padding: 4px 0; }
+
+  /* City select */
+  .cs-back { display: inline-block; padding: 8px 0; font-size: 18px; cursor: pointer; }
+  .cs-title { font-size: 22px; font-weight: 700; margin-bottom: 14px; }
+  .cs-search-wrap { position: relative; margin-bottom: 16px; }
+  .cs-input {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 11px 36px 11px 36px; font-size: 14px; width: 100%;
+    color: var(--text); outline: none;
+  }
+  .cs-input:focus { border-color: var(--brand); }
+  .cs-search-icon { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); font-size: 14px; color: var(--textMuted); pointer-events: none; }
+  .cs-clear-btn {
+    position: absolute; right: 8px; top: 50%; transform: translateY(-50%);
+    background: var(--border); border: none; border-radius: 999px;
+    width: 20px; height: 20px; font-size: 12px; line-height: 1;
+    color: var(--textMuted); cursor: pointer; display: none;
+    align-items: center; justify-content: center;
+  }
+  .cs-clear-btn.visible { display: flex; }
+  .cs-section-h {
+    font-size: 11px; color: var(--textMuted); text-transform: uppercase;
+    font-weight: 600; margin-bottom: 8px; letter-spacing: 0.5px;
+    display: flex; justify-content: space-between; align-items: baseline;
+  }
+  .cs-result-count { font-size: 10px; color: var(--textMuted); text-transform: none; letter-spacing: 0; }
+  .cs-row {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 10px; padding: 11px 14px; font-size: 14px;
+    margin-bottom: 6px; cursor: pointer; transition: border-color 0.12s;
+  }
+  .cs-row:hover { border-color: var(--brand); }
+  .cs-row-src { font-weight: 600; font-size: 14px; color: var(--text); }
+  .cs-row-name { font-size: 12px; color: var(--textMuted); margin-top: 2px; }
+  .cs-row-name::before { content: "· "; }
+  .cs-empty {
+    text-align: center; padding: 32px 16px; color: var(--textMuted);
+  }
+  .cs-empty-icon { font-size: 32px; margin-bottom: 10px; opacity: 0.5; }
+  .cs-empty-title { font-size: 14px; margin-bottom: 4px; color: var(--text); }
+  .cs-empty-desc { font-size: 12px; line-height: 1.5; }
+
+  /* Permission dialog overlay */
+  .perm-overlay {
+    position: absolute; inset: 0; background: rgba(0,0,0,0.4);
+    display: flex; align-items: center; justify-content: center;
+    padding: 16px; z-index: 100;
+    animation: fadeIn 0.15s;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .perm-dialog {
+    background: var(--surface); color: var(--text);
+    border-radius: 14px; padding: 20px 18px; width: 100%;
+    box-shadow: 0 12px 32px rgba(0,0,0,0.3);
+  }
+  .perm-case-tabs {
+    display: flex; gap: 4px; margin-bottom: 14px;
+    background: var(--border); padding: 3px; border-radius: 8px;
+  }
+  .perm-case-tab {
+    flex: 1; padding: 6px 4px; font-size: 10px; cursor: pointer;
+    border-radius: 6px; text-align: center; color: var(--textMuted);
+    border: none; background: transparent; line-height: 1.3;
+  }
+  .perm-case-tab.active { background: var(--surface); color: var(--text); font-weight: 600; box-shadow: 0 1px 2px rgba(0,0,0,0.1); }
+  .perm-dialog-title { font-size: 15px; font-weight: 700; margin-bottom: 6px; }
+  .perm-dialog-desc { font-size: 12px; color: var(--textMuted); line-height: 1.5; margin-bottom: 16px; }
+  .perm-dialog-actions { display: flex; gap: 8px; }
+  .perm-btn {
+    flex: 1; padding: 9px 10px; border-radius: 8px; font-size: 13px; font-weight: 500;
+    border: none; cursor: pointer;
+  }
+  .perm-btn-primary { background: var(--brand); color: var(--bg); }
+  .perm-btn-secondary { background: var(--border); color: var(--text); }
+  .perm-sim-hint {
+    background: #fff8e1; color: #6b5a18; font-size: 10px; line-height: 1.4;
+    padding: 8px 10px; border-radius: 6px; margin-bottom: 14px; border-left: 2px solid #ffc107;
+  }
+  [data-theme="dark"] .perm-sim-hint { background: #3a3422; color: #d4c896; }
+
+  /* Error */
+  .error-icon { font-size: 56px; text-align: center; margin-bottom: 12px; }
+  .error-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 8px; }
+  .error-desc { font-size: 14px; color: var(--textMuted); text-align: center; margin-bottom: 28px; line-height: 1.6; }
+
+  /* Empty */
+  .empty-icon { font-size: 56px; text-align: center; margin-bottom: 12px; }
+  .empty-title { font-size: 18px; font-weight: 600; text-align: center; margin-bottom: 6px; }
+  .empty-desc { font-size: 13px; color: var(--textMuted); text-align: center; margin-bottom: 24px; line-height: 1.6; }
+
+  /* Loading skeleton */
+  .skel { background: var(--border); border-radius: 4px; animation: pulse 1.5s infinite; }
+  @keyframes pulse { 0%,100% { opacity: 0.5; } 50% { opacity: 1; } }
+
+  /* Interactive hint */
+  .interactive-hint {
+    background: #fff8e1; border-left: 3px solid #ffc107;
+    padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: #555; border-radius: 4px;
+  }
+  .interactive-hint b { color: #1a1a1a; }
+</style>
+</head>
+<body data-theme="light">
+<div class="layout">
+  <aside class="sidebar">
+    <div class="breadcrumb"><a href="index.html">← 인덱스</a></div>
+    <h2>화면</h2>
+    <ul class="nav-list" id="nav-list"></ul>
+    <h2>모드</h2>
+    <div class="theme-toggle">
+      <button class="active" data-theme-btn="light">Light</button>
+      <button data-theme-btn="dark">Dark</button>
+    </div>
+    <div class="sidebar-meta">
+      <b>토큰:</b> Y1 Warm Minimal (잠정)<br>
+      <b>데이터:</b> V4-2a Case 1<br>
+      <b>흐름:</b> 화면 안 버튼 클릭으로 전환
+    </div>
+  </aside>
+
+  <main class="main">
+    <div class="screen-header">
+      <div>
+        <div class="screen-title" id="screen-title">스플래시</div>
+        <div class="screen-description" id="screen-description">앱 진입 1초</div>
+      </div>
+      <div class="screen-id" id="screen-id">screen 0</div>
+    </div>
+
+    <div class="interactive-hint" id="hint">
+      <b>인터랙티브 모드:</b> 화면 안 버튼 또는 영역을 탭하면 다음 화면으로 전환됩니다.
+    </div>
+
+    <div class="phone-stage">
+      <div class="phone-frame">
+        <div class="phone-screen" id="phone-screen">
+          <!-- Content rendered by JS -->
+        </div>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script>
+// Mock seed (108 entries from server/_shared/__data__/sido_seeds.json):
+// 광역시 7 자치구 전수 + 세종 2 + 제주 2 + 인구 큰 도 단위 시·군·구. 실제 빌드 시 230 entries 전수 활용.
+const CITIES = [
+  {name:"광주광역시",src:"광산구",lat:35.16158,lon:126.8081},{name:"광주광역시",src:"남구",lat:35.12159,lon:126.90943},{name:"광주광역시",src:"동구",lat:35.14592,lon:126.9232},{name:"광주광역시",src:"북구",lat:35.19232,lon:126.92439},{name:"광주광역시",src:"서구",lat:35.15248,lon:126.89106},
+  {name:"대구광역시",src:"남구",lat:35.84119,lon:128.588},{name:"대구광역시",src:"달서구",lat:35.82569,lon:128.52403},{name:"대구광역시",src:"달성군",lat:35.77467,lon:128.42955},{name:"대구광역시",src:"동구",lat:35.88566,lon:128.63296},{name:"대구광역시",src:"북구",lat:35.9,lon:128.59175},{name:"대구광역시",src:"서구",lat:35.87465,lon:128.55109},{name:"대구광역시",src:"수성구",lat:35.85905,lon:128.62625},{name:"대구광역시",src:"중구",lat:35.86678,lon:128.59538},
+  {name:"대전광역시",src:"대덕구",lat:36.39591,lon:127.43437},{name:"대전광역시",src:"동구",lat:36.32938,lon:127.44313},{name:"대전광역시",src:"서구",lat:36.28071,lon:127.34533},{name:"대전광역시",src:"유성구",lat:36.36685,lon:127.327},{name:"대전광역시",src:"중구",lat:36.28044,lon:127.41093},
+  {name:"부산광역시",src:"강서구",lat:35.1593,lon:128.933},{name:"부산광역시",src:"금정구",lat:35.25863,lon:129.0901},{name:"부산광역시",src:"기장군",lat:35.29721,lon:129.20076},{name:"부산광역시",src:"남구",lat:35.13648,lon:129.08266},{name:"부산광역시",src:"동구",lat:35.12468,lon:129.03432},{name:"부산광역시",src:"동래구",lat:35.20447,lon:129.078},{name:"부산광역시",src:"부산진구",lat:35.16293,lon:129.05133},{name:"부산광역시",src:"북구",lat:35.19724,lon:128.99134},{name:"부산광역시",src:"사상구",lat:35.14479,lon:128.97986},{name:"부산광역시",src:"사하구",lat:35.08552,lon:128.98725},{name:"부산광역시",src:"서구",lat:35.12529,lon:129.01946},{name:"부산광역시",src:"수영구",lat:35.15627,lon:129.11253},{name:"부산광역시",src:"연제구",lat:35.18206,lon:129.08285},{name:"부산광역시",src:"영도구",lat:35.07849,lon:129.06483},{name:"부산광역시",src:"중구",lat:35.10594,lon:129.03331},{name:"부산광역시",src:"해운대구",lat:35.16665,lon:129.16792},
+  {name:"서울특별시",src:"강남구",lat:37.4951,lon:127.06278},{name:"서울특별시",src:"강동구",lat:37.55274,lon:127.14546},{name:"서울특별시",src:"강북구",lat:37.6349,lon:127.02015},{name:"서울특별시",src:"강서구",lat:37.56227,lon:126.81622},{name:"서울특별시",src:"관악구",lat:37.47876,lon:126.95235},{name:"서울특별시",src:"광진구",lat:37.53913,lon:127.08366},{name:"서울특별시",src:"구로구",lat:37.49447,lon:126.8502},{name:"서울특별시",src:"금천구",lat:37.47486,lon:126.89106},{name:"서울특별시",src:"노원구",lat:37.66045,lon:127.06718},{name:"서울특별시",src:"도봉구",lat:37.65066,lon:127.03011},{name:"서울특별시",src:"동대문구",lat:37.58189,lon:127.05408},{name:"서울특별시",src:"동작구",lat:37.50056,lon:126.95149},{name:"서울특별시",src:"마포구",lat:37.55438,lon:126.90926},{name:"서울특별시",src:"서대문구",lat:37.57809,lon:126.93506},{name:"서울특별시",src:"서초구",lat:37.49447,lon:127.01088},{name:"서울특별시",src:"성동구",lat:37.54784,lon:127.02461},{name:"서울특별시",src:"성북구",lat:37.60267,lon:127.01448},{name:"서울특별시",src:"송파구",lat:37.5021,lon:127.11113},{name:"서울특별시",src:"양천구",lat:37.52056,lon:126.87472},{name:"서울특별시",src:"영등포구",lat:37.52606,lon:126.90308},{name:"서울특별시",src:"용산구",lat:37.53391,lon:126.9775},{name:"서울특별시",src:"은평구",lat:37.61846,lon:126.9278},{name:"서울특별시",src:"종로구",lat:37.5729,lon:126.97928},{name:"서울특별시",src:"중구",lat:37.55986,lon:126.99398},{name:"서울특별시",src:"중랑구",lat:37.60199,lon:127.10461},
+  {name:"세종특별자치시",src:"세종특별자치시청",lat:36.4801,lon:127.2891},{name:"세종특별자치시",src:"정부세종청사",lat:36.504,lon:127.2598},
+  {name:"울산광역시",src:"남구",lat:35.54382,lon:129.32917},{name:"울산광역시",src:"동구",lat:35.5047,lon:129.4186},{name:"울산광역시",src:"북구",lat:35.58243,lon:129.36049},{name:"울산광역시",src:"울주군",lat:35.56233,lon:129.1269},{name:"울산광역시",src:"중구",lat:35.5684,lon:129.33226},
+  {name:"인천광역시",src:"강화군",lat:37.74722,lon:126.48556},{name:"인천광역시",src:"계양구",lat:37.52306,lon:126.74472},{name:"인천광역시",src:"남구",lat:37.46362,lon:126.65},{name:"인천광역시",src:"남동구",lat:37.41831,lon:126.7184},{name:"인천광역시",src:"동구",lat:37.48375,lon:126.6369},{name:"인천광역시",src:"부평구",lat:37.4972,lon:126.71107},{name:"인천광역시",src:"서구",lat:37.55233,lon:126.65543},{name:"인천광역시",src:"연수구",lat:37.41911,lon:126.66489},{name:"인천광역시",src:"옹진군",lat:37.23361,lon:126.12305},{name:"인천광역시",src:"중구",lat:37.47353,lon:126.62151},
+  {name:"제주특별자치도",src:"서귀포시",lat:33.29307,lon:126.49748},{name:"제주특별자치도",src:"제주시",lat:33.50972,lon:126.52194},
+  {name:"강원특별자치도",src:"강릉시",lat:37.7519,lon:128.87825},{name:"강원특별자치도",src:"원주시",lat:37.32104,lon:127.92132},{name:"강원특별자치도",src:"춘천시",lat:37.88048,lon:127.72776},
+  {name:"경기도",src:"고양시",lat:37.65639,lon:126.835},{name:"경기도",src:"남양주시",lat:37.65217,lon:127.2401},{name:"경기도",src:"부천시",lat:37.49889,lon:126.78306},{name:"경기도",src:"성남시",lat:37.41875,lon:127.12877},{name:"경기도",src:"수원시",lat:37.28586,lon:127.00993},{name:"경기도",src:"안산시",lat:37.31693,lon:126.83048},{name:"경기도",src:"용인시",lat:37.23825,lon:127.17795},{name:"경기도",src:"화성시",lat:37.20025,lon:126.82909},
+  {name:"경상남도",src:"김해시",lat:35.25,lon:128.86667},{name:"경상남도",src:"양산시",lat:35.39866,lon:129.03612},{name:"경상남도",src:"진주시",lat:35.20445,lon:128.12408},{name:"경상남도",src:"창원시",lat:35.27533,lon:128.65152},
+  {name:"경상북도",src:"경주시",lat:35.84278,lon:129.21167},{name:"경상북도",src:"구미시",lat:36.21009,lon:128.35442},{name:"경상북도",src:"안동시",lat:36.56636,lon:128.72275},{name:"경상북도",src:"포항시",lat:36.08333,lon:129.36667},
+  {name:"전라남도",src:"목포시",lat:34.80826,lon:126.3942},{name:"전라남도",src:"순천시",lat:34.98951,lon:127.39551},{name:"전라남도",src:"여수시",lat:34.77647,lon:127.64253},
+  {name:"전북특별자치도",src:"군산시",lat:35.93583,lon:126.68338},{name:"전북특별자치도",src:"익산시",lat:35.94389,lon:126.95444},{name:"전북특별자치도",src:"전주시",lat:35.82194,lon:127.14889},
+  {name:"충청남도",src:"서산시",lat:36.78518,lon:126.46568},{name:"충청남도",src:"아산시",lat:36.78361,lon:127.00417},{name:"충청남도",src:"천안시",lat:36.80488,lon:127.19431},
+  {name:"충청북도",src:"청주시",lat:36.63722,lon:127.48972},{name:"충청북도",src:"충주시",lat:37.01791,lon:127.87713}
+];
+
+// prefill: 광역시 7 + 세종 (대표 좌표 = 각 시·도 첫 entry)
+const PREFILL_ORDER = ["서울특별시","부산광역시","대구광역시","인천광역시","광주광역시","대전광역시","울산광역시","세종특별자치시"];
+const PREFILL = PREFILL_ORDER.map(n => {
+  const e = CITIES.find(c => c.name === n);
+  return e ? { name: n, src: n, lat: e.lat, lon: e.lon } : null;
+}).filter(Boolean);
+
+// 검색 매칭 — src + name 둘 다 contains. prefix 우선 정렬, 같은 등급 내 가나다순.
+function matchCities(query) {
+  const q = query.trim();
+  if (!q) return [];
+  const lq = q.toLowerCase();
+  const scored = [];
+  for (const c of CITIES) {
+    const src = c.src.toLowerCase();
+    const name = c.name.toLowerCase();
+    let score = -1;
+    if (src.startsWith(lq)) score = 0;        // src prefix
+    else if (src.includes(lq)) score = 1;     // src contains
+    else if (name.startsWith(lq)) score = 2;  // name prefix
+    else if (name.includes(lq)) score = 3;    // name contains
+    if (score >= 0) scored.push({ c, score });
+  }
+  scored.sort((a, b) => a.score - b.score || a.c.src.localeCompare(b.c.src, "ko"));
+  return scored.map(s => s.c);
+}
+
+const screens = [
+  { id: 0, name: "스플래시", desc: "앱 진입 1초 (Auth 토큰 확인 + 데이터 prefetch). 토큰 있으면 메인, 없으면 온보딩.", render: renderSplash },
+  { id: 1, name: "온보딩 1 — 성별", desc: "최초 1회 (마이페이지에서 변경 가능). 성별만 받음 — 나이는 v1.5 옵션", render: renderOnboardingGender },
+  { id: 2, name: "온보딩 2 — 위치 권한", desc: "GPS 권한 사전 안내 + 시스템 다이얼로그 트리거", render: renderOnboardingLocation },
+  { id: 3, name: "메인 ⭐", desc: "오늘 추천. 가장 자주 보는 화면. 헤더 + 무드 태그 + 4 아이템 카드 + CTA", render: renderMain },
+  { id: 4, name: "마이페이지", desc: "컬러 테마, 위치, 알림, 화면 모드, 계정, 정보. GPS 자동 토글로 권한 분기 dialog 시뮬레이션 (3 케이스)", render: renderMyPage },
+  { id: 5, name: "도시 직접 선택", desc: "GPS 거부 시 또는 마이페이지에서 진입. SearchBar 자동완성 (src+name contains, prefix 우선) + prefill 8개 빈 상태. 230 entries 중 108개 mock seed", render: renderCitySelect },
+  { id: 6, name: "에러 — 네트워크 없음", desc: "기상청·캐시 모두 실패 시 또는 네트워크 끊김", render: renderError },
+  { id: 7, name: "빈 상태 — 위치 미설정", desc: "GPS 거부 + 도시 미선택 시", render: renderEmpty }
+];
+
+let currentScreen = 0;
+
+function statusBar() {
+  return `<div class="status-bar"><span>9:41</span><span>● ● ●</span></div>`;
+}
+
+function renderSplash() {
+  return `${statusBar()}<div class="splash" onclick="goto(1)" style="cursor:pointer;"><div class="splash-logo">PALETI</div></div>`;
+}
+
+function renderOnboardingGender() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <div class="ob-title">안녕하세요 👋</div>
+    <div class="ob-title" style="margin-top:0;">성별을 알려주세요</div>
+    <div class="ob-subtitle">옷 추천에 사용돼요</div>
+    <div class="ob-gender-card" id="g-m" onclick="selectGender('M')">
+      <div class="icon">👨</div>
+      <div class="label">남자</div>
+    </div>
+    <div class="ob-gender-card" id="g-f" onclick="selectGender('F')">
+      <div class="icon">👩</div>
+      <div class="label">여자</div>
+    </div>
+    <div style="flex:1;"></div>
+    <button class="btn-primary btn-disabled" id="g-next" onclick="goto(2)">다음 →</button>
+  </div>`;
+}
+
+let selectedGender = null;
+function selectGender(g) {
+  selectedGender = g;
+  document.getElementById("g-m").classList.toggle("selected", g === "M");
+  document.getElementById("g-f").classList.toggle("selected", g === "F");
+  document.getElementById("g-next").classList.remove("btn-disabled");
+}
+
+function renderOnboardingLocation() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <div class="ob-icon-large">📍</div>
+    <div class="ob-title" style="text-align:center; margin-top:0;">위치 권한이 필요해요</div>
+    <div class="ob-subtitle" style="text-align:center;">현재 위치 날씨를 기반으로<br>매일 색을 추천해 드려요</div>
+    <div class="ob-info-card">
+      앱 사용 중에만 위치를 사용해요 (백그라운드 X). 위젯은 메인 앱이 저장한 마지막 위치를 사용합니다.
+    </div>
+    <div style="flex:1;"></div>
+    <button class="btn-primary" onclick="goto(3)">위치 권한 허용하기</button>
+    <button class="btn-text" onclick="goto(5)">나중에 설정 (수동)</button>
+  </div>`;
+}
+
+function renderMain() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <div class="main-header">
+      <div>
+        <div class="main-location" onclick="goto(5)" style="cursor:pointer;">서울 ↻</div>
+        <div class="main-weather">18°C 맑음</div>
+        <div class="main-weather">미세먼지 보통</div>
+      </div>
+      <div class="main-settings" onclick="goto(4)" style="cursor:pointer;">⚙</div>
+    </div>
+    <span class="mood-tag">톤온톤 · 봄 따뜻함</span>
+    <div class="items-list">
+      <div class="item-card">
+        <div class="item-chip empty"></div>
+        <div class="item-info">
+          <div class="item-role">외투</div>
+          <div class="item-name" style="color:var(--textMuted);">해당 없음</div>
+        </div>
+      </div>
+      <div class="item-card">
+        <div class="item-chip" style="background:#F8F8F2;"></div>
+        <div class="item-info">
+          <div class="item-role">상의</div>
+          <div class="item-name">오프 화이트 <span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--textMuted);">#F8F8F2</span></div>
+          <div class="item-clothing">면 긴팔티</div>
+        </div>
+      </div>
+      <div class="item-card">
+        <div class="item-chip" style="background:#2C4E80;"></div>
+        <div class="item-info">
+          <div class="item-role">하의</div>
+          <div class="item-name">딥 인디고 <span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--textMuted);">#2C4E80</span></div>
+          <div class="item-clothing">청바지</div>
+        </div>
+      </div>
+      <div class="item-card">
+        <div class="item-chip" style="background:#D2B48C;"></div>
+        <div class="item-info">
+          <div class="item-role">신발</div>
+          <div class="item-name">탠 베이지 <span style="font-family:ui-monospace,monospace;font-size:12px;color:var(--textMuted);">#D2B48C</span></div>
+          <div class="item-clothing">캔버스화</div>
+        </div>
+      </div>
+    </div>
+    <div class="cta-area">
+      <button class="btn-primary" onclick="goto(4)">컬러 테마 변경 ▼</button>
+    </div>
+  </div>`;
+}
+
+function renderMyPage() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <span class="myp-back" onclick="goto(3)">←</span>
+    <div class="myp-title">설정</div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">컬러 테마</div>
+      <div class="myp-list-row selected">오리지널 <span class="check">✓</span></div>
+      <div class="myp-list-row">모노크롬</div>
+      <div class="myp-list-row">팝</div>
+      <div class="myp-list-row">파스텔 + 6 more</div>
+    </div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">위치 설정</div>
+      <div class="myp-list-row">
+        <span>GPS 자동</span>
+        <span class="myp-switch ${gpsAutoOn ? "on" : ""}" onclick="event.stopPropagation(); onGpsToggle();"></span>
+      </div>
+      <div class="myp-list-row" onclick="goto(5)">
+        <span>도시 직접 선택</span>
+        <span style="color:var(--textMuted);">→</span>
+      </div>
+    </div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">알림</div>
+      <div class="myp-list-row">
+        <span>매일 아침 푸시 (08:00)</span>
+        <span class="myp-switch on" onclick="event.stopPropagation(); this.classList.toggle('on');"></span>
+      </div>
+      <div class="myp-list-row">
+        <span>미세먼지 매우 나쁨</span>
+        <span class="myp-switch on" onclick="event.stopPropagation(); this.classList.toggle('on');"></span>
+      </div>
+    </div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">화면 모드</div>
+      <div class="myp-radio">
+        <div class="myp-radio-item selected" onclick="setMode('system')"><span class="myp-radio-dot"></span>시스템</div>
+        <div class="myp-radio-item" onclick="setMode('light')"><span class="myp-radio-dot"></span>라이트</div>
+        <div class="myp-radio-item" onclick="setMode('dark')"><span class="myp-radio-dot"></span>다크</div>
+      </div>
+    </div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">계정</div>
+      <div class="myp-account">kj.lee2@smart-olive.co.kr</div>
+      <div class="myp-list-row" style="color:var(--error);">로그아웃</div>
+    </div>
+
+    <div class="myp-section">
+      <div class="myp-section-h">정보</div>
+      <div class="myp-list-row">이용약관</div>
+      <div class="myp-list-row">개인정보처리방침</div>
+      <div class="myp-list-row" style="color:var(--textMuted);">버전 1.0.0</div>
+    </div>
+  </div>`;
+}
+
+function setMode(m) {
+  // visual only - radio
+  const items = document.querySelectorAll(".myp-radio-item");
+  items.forEach(i => i.classList.remove("selected"));
+  event.currentTarget.classList.add("selected");
+}
+
+// GPS 자동 라디오 + 권한 분기 dialog (wireframes §4.1 — 2026-05-14 신설)
+let gpsAutoOn = true; // 현재 LocationMode 가 Gps 라고 가정 (실제 앱은 DataStore)
+let permCase = "granted"; // 시뮬레이션 케이스: granted / askable / permanent_denied
+
+function onGpsToggle() {
+  if (gpsAutoOn) {
+    // 토글을 끄는 흐름은 단순히 Manual 로 전환 (wireframes §4 표 — "도시 직접 선택" 라디오 탭과 동일 결과). dialog 없음.
+    gpsAutoOn = false;
+    document.getElementById("phone-screen").innerHTML = renderMyPage();
+    return;
+  }
+  // OFF → ON 전환: 권한 상태 분기 dialog 표시
+  openPermissionDialog();
+}
+
+function openPermissionDialog() {
+  const phone = document.getElementById("phone-screen");
+  const overlay = document.createElement("div");
+  overlay.className = "perm-overlay";
+  overlay.id = "perm-overlay";
+  overlay.innerHTML = renderPermissionDialog();
+  phone.appendChild(overlay);
+}
+
+function closePermissionDialog(grant) {
+  const ov = document.getElementById("perm-overlay");
+  if (ov) ov.remove();
+  if (grant) {
+    gpsAutoOn = true;
+    document.getElementById("phone-screen").innerHTML = renderMyPage();
+  }
+  // grant=false 면 라디오 OFF 유지
+}
+
+function setPermCase(c) {
+  permCase = c;
+  const ov = document.getElementById("perm-overlay");
+  if (ov) ov.innerHTML = renderPermissionDialog();
+}
+
+function renderPermissionDialog() {
+  const cases = {
+    granted: {
+      title: "권한 보유 — 즉시 전환",
+      desc: "ACCESS_FINE_LOCATION 또는 ACCESS_COARSE_LOCATION 둘 중 하나가 이미 granted 상태. dialog 표시 없이 LocationMode.Gps 로 즉시 전환되고 메인 진입 시 FusedLocation 좌표 사용.",
+      primary: { label: "즉시 전환 (자동)", action: "closePermissionDialog(true)" },
+      secondary: null
+    },
+    askable: {
+      title: "위치 권한이 필요해요",
+      desc: "GPS 자동 모드는 현재 위치 권한이 필요합니다. 허용하면 정확한 추천이 가능해요.",
+      primary: { label: "허용", action: "closePermissionDialog(true)" },
+      secondary: { label: "나중에", action: "closePermissionDialog(false)" },
+      sys: "↓ 실제 앱: 시스템 권한 다이얼로그 (FINE+COARSE) 표시"
+    },
+    permanent_denied: {
+      title: "위치 권한이 영구 거부됨",
+      desc: "이전에 \"다시 묻지 않음\" 으로 거부하셨어요. GPS 자동을 켜려면 시스템 설정에서 직접 위치 권한을 켜주세요.",
+      primary: { label: "설정 이동", action: "closePermissionDialog(false)" },
+      secondary: { label: "취소", action: "closePermissionDialog(false)" },
+      sys: "↓ 실제 앱: Settings.ACTION_APPLICATION_DETAILS_SETTINGS Intent"
+    }
+  };
+  const c = cases[permCase];
+  return `
+    <div class="perm-dialog">
+      <div class="perm-case-tabs">
+        <button class="perm-case-tab ${permCase==="granted"?"active":""}" onclick="setPermCase('granted')">(a) 권한<br>보유</button>
+        <button class="perm-case-tab ${permCase==="askable"?"active":""}" onclick="setPermCase('askable')">(b) 미허용<br>(요청 가능)</button>
+        <button class="perm-case-tab ${permCase==="permanent_denied"?"active":""}" onclick="setPermCase('permanent_denied')">(c) 영구<br>거부</button>
+      </div>
+      <div class="perm-sim-hint">시뮬레이션 — 위 탭으로 권한 상태 3 케이스 (wireframes §4.1) 분기 미리보기</div>
+      <div class="perm-dialog-title">${escapeHtml(c.title)}</div>
+      <div class="perm-dialog-desc">${escapeHtml(c.desc)}</div>
+      ${c.sys ? `<div style="font-size:10px; color:var(--textMuted); margin-bottom:12px; font-style:italic;">${escapeHtml(c.sys)}</div>` : ""}
+      <div class="perm-dialog-actions">
+        ${c.secondary ? `<button class="perm-btn perm-btn-secondary" onclick="${c.secondary.action}">${escapeHtml(c.secondary.label)}</button>` : ""}
+        <button class="perm-btn perm-btn-primary" onclick="${c.primary.action}">${escapeHtml(c.primary.label)}</button>
+      </div>
+    </div>
+  `;
+}
+
+let citySearchQuery = "";
+
+function renderCitySelect() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <span class="cs-back" onclick="goto(3)">←</span>
+    <div class="cs-title">도시 선택</div>
+    <div class="cs-search-wrap">
+      <span class="cs-search-icon">🔍</span>
+      <input class="cs-input" id="cs-input" placeholder="도시·구 검색" value="${escapeAttr(citySearchQuery)}" oninput="onCitySearchInput(this.value)" autocomplete="off">
+      <button class="cs-clear-btn ${citySearchQuery ? "visible" : ""}" id="cs-clear" onclick="onCityClearClick()" aria-label="검색어 지우기">✕</button>
+    </div>
+    <div id="cs-list">${renderCityList(citySearchQuery)}</div>
+  </div>`;
+}
+
+function escapeAttr(s) { return String(s).replace(/"/g, "&quot;"); }
+function escapeHtml(s) { return String(s).replace(/[&<>"']/g, c => ({ "&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;" }[c])); }
+
+function renderCityList(query) {
+  if (!query.trim()) {
+    // 빈 상태 — prefill 8
+    return `
+      <div class="cs-section-h"><span>인기 도시</span></div>
+      ${PREFILL.map(c => `<div class="cs-row" onclick="onCitySelect('${escapeAttr(c.name)}', '${escapeAttr(c.src)}')">
+        <div class="cs-row-src">${escapeHtml(c.name)}</div>
+      </div>`).join("")}
+    `;
+  }
+  const results = matchCities(query);
+  if (results.length === 0) {
+    return `
+      <div class="cs-section-h"><span>검색 결과</span><span class="cs-result-count">0건</span></div>
+      <div class="cs-empty">
+        <div class="cs-empty-icon">🔍</div>
+        <div class="cs-empty-title">"${escapeHtml(query)}" 검색 결과가 없습니다</div>
+        <div class="cs-empty-desc">시·군·구 이름을 다시 확인해주세요</div>
+      </div>
+    `;
+  }
+  return `
+    <div class="cs-section-h"><span>검색 결과</span><span class="cs-result-count">${results.length}건</span></div>
+    ${results.slice(0, 60).map(c => `<div class="cs-row" onclick="onCitySelect('${escapeAttr(c.name)}', '${escapeAttr(c.src)}')">
+      <div class="cs-row-src">${escapeHtml(c.src)}</div>
+      <div class="cs-row-name">${escapeHtml(c.name)}</div>
+    </div>`).join("")}
+    ${results.length > 60 ? `<div class="cs-empty-desc" style="text-align:center; padding: 12px;">+${results.length - 60}건 더 (상단 60건 표시)</div>` : ""}
+  `;
+}
+
+function onCitySearchInput(v) {
+  citySearchQuery = v;
+  document.getElementById("cs-clear").classList.toggle("visible", !!v);
+  document.getElementById("cs-list").innerHTML = renderCityList(v);
+}
+
+function onCityClearClick() {
+  citySearchQuery = "";
+  const input = document.getElementById("cs-input");
+  input.value = "";
+  input.focus();
+  document.getElementById("cs-clear").classList.remove("visible");
+  document.getElementById("cs-list").innerHTML = renderCityList("");
+}
+
+function onCitySelect(name, src) {
+  // 실제 흐름: DataStore Manual + POST user-update + Main 진입
+  // prototype: Main 으로 전환 + query 초기화
+  citySearchQuery = "";
+  goto(3);
+}
+
+function renderError() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <div class="main-header">
+      <div>
+        <div class="main-location">서울 ↻</div>
+        <div class="main-weather">-- --</div>
+      </div>
+      <div class="main-settings" onclick="goto(4)" style="cursor:pointer;">⚙</div>
+    </div>
+    <div class="center-vh">
+      <div class="error-icon">🌧️</div>
+      <div class="error-title">인터넷에 연결되지 않아요</div>
+      <div class="error-desc">연결 확인 후 다시 시도해 주세요</div>
+      <button class="btn-primary" onclick="goto(3)">다시 시도</button>
+    </div>
+  </div>`;
+}
+
+function renderEmpty() {
+  return `${statusBar()}
+  <div class="screen-body">
+    <div style="padding-top:8px;">
+      <div class="myp-title">위치 설정 필요</div>
+    </div>
+    <div class="center-vh">
+      <div class="empty-icon">📍</div>
+      <div class="empty-title">위치를 설정해 주세요</div>
+      <div class="empty-desc">GPS를 켜거나<br>도시를 직접 선택할 수 있어요</div>
+      <button class="btn-primary" style="margin-bottom:8px;" onclick="goto(2)">GPS 권한 허용</button>
+      <button class="btn-secondary" onclick="goto(5)">도시 직접 선택</button>
+    </div>
+  </div>`;
+}
+
+function renderNav() {
+  document.getElementById("nav-list").innerHTML = screens.map(s => `
+    <li class="nav-item ${s.id === currentScreen ? "active" : ""}" onclick="goto(${s.id})">
+      <span class="num">${s.id}</span>
+      <span>${s.name}</span>
+    </li>
+  `).join("");
+}
+
+function goto(id) {
+  currentScreen = id;
+  const screen = screens[id];
+  document.getElementById("screen-title").textContent = screen.name;
+  document.getElementById("screen-description").textContent = screen.desc;
+  document.getElementById("screen-id").textContent = `screen ${id}`;
+  document.getElementById("phone-screen").innerHTML = screen.render();
+  renderNav();
+}
+
+// Theme toggle
+document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+  btn.onclick = () => {
+    document.body.dataset.theme = btn.dataset.themeBtn;
+    document.querySelectorAll("[data-theme-btn]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
+
+goto(0);
+</script>
+</body>
+</html>

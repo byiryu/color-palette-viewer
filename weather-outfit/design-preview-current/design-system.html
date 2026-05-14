@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 디자인 시스템 토큰</title>
+<style>
+  :root {
+    --bg: #F8F5F0; --surface: #FFFFFF; --text: #1A1A1A; --textMuted: #7A7468;
+    --brand: #2C4E80; --border: #E8E5E0;
+  }
+  [data-theme="dark"] {
+    --bg: #1A1815; --surface: #2A2520; --text: #F0EDE8; --textMuted: #A89B8C;
+    --brand: #8FA9C9; --border: #3A352F;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", sans-serif;
+    background: var(--bg); color: var(--text); line-height: 1.5;
+    padding: 32px 24px; min-height: 100vh; transition: background 0.2s;
+  }
+  .container { max-width: 1200px; margin: 0 auto; }
+  .breadcrumb { color: var(--textMuted); font-size: 13px; margin-bottom: 16px; }
+  .breadcrumb a { color: var(--brand); text-decoration: none; }
+  header { border-bottom: 2px solid var(--text); padding-bottom: 16px; margin-bottom: 32px; display: flex; justify-content: space-between; align-items: baseline; }
+  h1 { font-size: 28px; }
+  .theme-toggle { display: flex; gap: 6px; }
+  .theme-toggle button {
+    padding: 6px 14px; border: 1px solid var(--border); background: var(--surface);
+    color: var(--text); border-radius: 999px; font-size: 12px; cursor: pointer;
+  }
+  .theme-toggle button.active { background: var(--text); color: var(--bg); border-color: var(--text); }
+
+  h2 {
+    font-size: 16px; color: var(--textMuted); text-transform: uppercase;
+    letter-spacing: 1.2px; margin: 36px 0 14px; font-weight: 700;
+  }
+
+  /* Color tokens */
+  .color-grid {
+    display: grid; grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+    gap: 12px;
+  }
+  .color-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 12px; overflow: hidden;
+  }
+  .color-swatch { aspect-ratio: 1.6/1; border-bottom: 1px solid var(--border); }
+  .color-info { padding: 10px 12px; }
+  .color-token { font-size: 11px; font-family: ui-monospace, "SF Mono", monospace; color: var(--textMuted); margin-bottom: 2px; }
+  .color-name { font-size: 12px; font-weight: 600; margin-bottom: 2px; }
+  .color-hex { font-size: 10px; color: var(--textMuted); font-family: ui-monospace, "SF Mono", monospace; }
+
+  /* Typography */
+  .typo-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 8px; }
+  .typo-row { display: grid; grid-template-columns: 280px 1fr; gap: 16px; padding: 14px 16px; border-bottom: 1px solid var(--border); align-items: center; }
+  .typo-row:last-child { border-bottom: none; }
+  .typo-meta { font-size: 11px; font-family: ui-monospace, "SF Mono", monospace; color: var(--textMuted); }
+  .typo-meta b { color: var(--text); font-family: inherit; font-size: 13px; }
+  .typo-sample { color: var(--text); }
+
+  /* Spacing */
+  .spacing-list { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; padding: 14px; }
+  .spacing-row { display: flex; align-items: center; gap: 16px; margin-bottom: 12px; }
+  .spacing-row:last-child { margin-bottom: 0; }
+  .spacing-label { font-size: 11px; font-family: ui-monospace, "SF Mono", monospace; color: var(--textMuted); width: 110px; }
+  .spacing-label b { color: var(--text); font-family: inherit; font-size: 13px; }
+  .spacing-bar { background: var(--brand); height: 16px; border-radius: 4px; }
+
+  /* Radius */
+  .radius-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 12px; }
+  .radius-card { background: var(--surface); border: 1px solid var(--border); padding: 16px; text-align: center; }
+  .radius-shape { aspect-ratio: 1; background: var(--brand); margin: 0 auto 8px; max-width: 80px; }
+  .radius-label { font-size: 11px; font-family: ui-monospace, "SF Mono", monospace; color: var(--textMuted); }
+  .radius-label b { color: var(--text); font-family: inherit; font-size: 13px; display: block; margin-bottom: 2px; }
+
+  /* Elevation */
+  .elevation-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); gap: 16px; }
+  .elevation-card { background: var(--surface); border-radius: 12px; padding: 24px; text-align: center; }
+  [data-theme="light"] .e0 { box-shadow: none; }
+  [data-theme="light"] .e1 { box-shadow: 0 1px 3px rgba(0,0,0,0.04); }
+  [data-theme="light"] .e2 { box-shadow: 0 4px 12px rgba(0,0,0,0.06); }
+  [data-theme="light"] .e3 { box-shadow: 0 8px 24px rgba(0,0,0,0.10); }
+  [data-theme="dark"] .e0 { box-shadow: none; }
+  [data-theme="dark"] .e1 { box-shadow: 0 1px 3px rgba(0,0,0,0.4); }
+  [data-theme="dark"] .e2 { box-shadow: 0 4px 12px rgba(0,0,0,0.5); }
+  [data-theme="dark"] .e3 { box-shadow: 0 8px 24px rgba(0,0,0,0.6); }
+  .elevation-card .label { font-size: 11px; color: var(--textMuted); font-family: ui-monospace, monospace; }
+  .elevation-card .label b { color: var(--text); font-family: inherit; font-size: 13px; display: block; margin-bottom: 4px; }
+
+  /* System colors */
+  .system-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  @media (max-width: 600px) { .system-grid { grid-template-columns: 1fr; } }
+</style>
+</head>
+<body data-theme="light">
+<div class="container">
+  <div class="breadcrumb"><a href="index.html">← 인덱스</a></div>
+
+  <header>
+    <h1>디자인 시스템 토큰</h1>
+    <div class="theme-toggle">
+      <button class="active" data-theme-btn="light">Light</button>
+      <button data-theme-btn="dark">Dark</button>
+    </div>
+  </header>
+
+  <h2>1. 컬러 토큰 — Light/Dark 페어링</h2>
+  <div id="colors-light" class="color-grid"></div>
+
+  <h2>2. 시스템 컬러 — Light·Dark 공통</h2>
+  <div id="colors-system" class="system-grid"></div>
+
+  <h2>3. 타이포그래피 — Pretendard Variable</h2>
+  <div class="typo-list" id="typo-list"></div>
+
+  <h2>4. 스페이싱 — 8px 기반 스케일</h2>
+  <div class="spacing-list" id="spacing-list"></div>
+
+  <h2>5. 라디우스</h2>
+  <div class="radius-grid" id="radius-grid"></div>
+
+  <h2>6. Elevation (그림자)</h2>
+  <div class="elevation-grid" id="elevation-grid"></div>
+</div>
+
+<script>
+const colorsTheme = {
+  light: [
+    { token: "color_F8F5F0", hex: "F8F5F0", name: "배경", role: "bg" },
+    { token: "color_FFFFFF", hex: "FFFFFF", name: "표면", role: "surface" },
+    { token: "color_1A1A1A", hex: "1A1A1A", name: "주 텍스트", role: "text" },
+    { token: "color_7A7468", hex: "7A7468", name: "보조 텍스트", role: "textMuted" },
+    { token: "color_2C4E80", hex: "2C4E80", name: "브랜드 / CTA", role: "brand" },
+    { token: "color_E8E5E0", hex: "E8E5E0", name: "경계선", role: "border" }
+  ],
+  dark: [
+    { token: "color_1A1815", hex: "1A1815", name: "배경", role: "bg" },
+    { token: "color_2A2520", hex: "2A2520", name: "표면", role: "surface" },
+    { token: "color_F0EDE8", hex: "F0EDE8", name: "주 텍스트", role: "text" },
+    { token: "color_A89B8C", hex: "A89B8C", name: "보조 텍스트", role: "textMuted" },
+    { token: "color_8FA9C9", hex: "8FA9C9", name: "브랜드 / CTA", role: "brand" },
+    { token: "color_3A352F", hex: "3A352F", name: "경계선", role: "border" }
+  ]
+};
+
+const systemColors = [
+  { token: "color_FF6B6B", hex: "FF6B6B", name: "에러 / 실패" },
+  { token: "color_51CF66", hex: "51CF66", name: "성공 / 완료 (v1.x~)" },
+  { token: "color_FFD43B", hex: "FFD43B", name: "경고 / 미세먼지 나쁨" }
+];
+
+const typography = [
+  { token: "font_pretendard_bold_32", size: 32, weight: 700, usage: "페이지 타이틀", sample: "오늘의 PALETI" },
+  { token: "font_pretendard_bold_28", size: 28, weight: 700, usage: "메인 헤더 (위치명)", sample: "서울" },
+  { token: "font_pretendard_semibold_22", size: 22, weight: 600, usage: "섹션 헤더", sample: "컬러 테마" },
+  { token: "font_pretendard_semibold_18", size: 18, weight: 600, usage: "카드 타이틀", sample: "오프 화이트 #F8F8F2" },
+  { token: "font_pretendard_medium_16", size: 16, weight: 500, usage: "본문 강조 · 버튼 라벨", sample: "컬러 테마 변경" },
+  { token: "font_pretendard_regular_16", size: 16, weight: 400, usage: "본문", sample: "현재 위치 날씨를 기반으로 매일 색을 추천해 드려요." },
+  { token: "font_pretendard_regular_14", size: 14, weight: 400, usage: "보조 본문 · 옷종류", sample: "면 긴팔티" },
+  { token: "font_pretendard_medium_13", size: 13, weight: 500, usage: "라벨 · 태그", sample: "톤온톤 · 봄 따뜻함" },
+  { token: "font_pretendard_regular_12", size: 12, weight: 400, usage: "caption · timestamp", sample: "최근 갱신: 5분 전" }
+];
+
+const spacing = [4, 8, 12, 16, 20, 24, 32, 48];
+
+const radius = [
+  { name: "radius_4",   value: 4,   usage: "작은 inline 요소" },
+  { name: "radius_8",   value: 8,   usage: "컬러 칩 · 작은 버튼" },
+  { name: "radius_12",  value: 12,  usage: "카드 (아이템)" },
+  { name: "radius_16",  value: 16,  usage: "큰 카드 · 시트" },
+  { name: "radius_999", value: 999, usage: "pill · 태그" }
+];
+
+const elevation = [
+  { name: "elevation_0", className: "e0", usage: "메인 컨테이너" },
+  { name: "elevation_1", className: "e1", usage: "카드 기본" },
+  { name: "elevation_2", className: "e2", usage: "시트 · 다이얼로그" },
+  { name: "elevation_3", className: "e3", usage: "FAB · 떠 있는 액션" }
+];
+
+// Render colors (Light + Dark 페어)
+function renderColors() {
+  const grid = document.getElementById("colors-light");
+  const light = colorsTheme.light;
+  const dark = colorsTheme.dark;
+  const html = light.map((c, i) => {
+    const d = dark[i];
+    return `
+      <div class="color-card">
+        <div class="color-swatch" style="background:#${c.hex};"></div>
+        <div class="color-info">
+          <div class="color-token">${c.token}</div>
+          <div class="color-name">${c.name}</div>
+          <div class="color-hex">Light: #${c.hex}</div>
+          <div class="color-hex">Dark:&nbsp; #${d.hex}</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+  grid.innerHTML = html;
+}
+
+function renderSystem() {
+  document.getElementById("colors-system").innerHTML = systemColors.map(c => `
+    <div class="color-card">
+      <div class="color-swatch" style="background:#${c.hex};"></div>
+      <div class="color-info">
+        <div class="color-token">${c.token}</div>
+        <div class="color-name">${c.name}</div>
+        <div class="color-hex">#${c.hex}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderTypo() {
+  document.getElementById("typo-list").innerHTML = typography.map(t => `
+    <div class="typo-row">
+      <div class="typo-meta">
+        <b>${t.token}</b>
+        ${t.size}sp · weight ${t.weight}<br>
+        <span style="color:#A89B8C;">${t.usage}</span>
+      </div>
+      <div class="typo-sample" style="font-size:${t.size}px; font-weight:${t.weight}; line-height:1.3;">${t.sample}</div>
+    </div>
+  `).join("");
+}
+
+function renderSpacing() {
+  document.getElementById("spacing-list").innerHTML = spacing.map(s => `
+    <div class="spacing-row">
+      <div class="spacing-label">
+        <b>spacing_${s}</b>
+        ${s} dp/pt
+      </div>
+      <div class="spacing-bar" style="width:${s * 4}px;"></div>
+    </div>
+  `).join("");
+}
+
+function renderRadius() {
+  document.getElementById("radius-grid").innerHTML = radius.map(r => `
+    <div class="radius-card">
+      <div class="radius-shape" style="border-radius: ${r.value === 999 ? "999px" : r.value + "px"};"></div>
+      <div class="radius-label">
+        <b>${r.name}</b>
+        ${r.value === 999 ? "999 (pill)" : r.value + " dp/pt"}
+        <div style="margin-top:4px; font-size:10px;">${r.usage}</div>
+      </div>
+    </div>
+  `).join("");
+}
+
+function renderElevation() {
+  document.getElementById("elevation-grid").innerHTML = elevation.map(e => `
+    <div class="elevation-card ${e.className}">
+      <div class="label">
+        <b>${e.name}</b>
+        ${e.usage}
+      </div>
+    </div>
+  `).join("");
+}
+
+renderColors();
+renderSystem();
+renderTypo();
+renderSpacing();
+renderRadius();
+renderElevation();
+
+// Theme toggle
+document.querySelectorAll("[data-theme-btn]").forEach(btn => {
+  btn.onclick = () => {
+    const theme = btn.dataset.themeBtn;
+    document.body.dataset.theme = theme;
+    document.querySelectorAll("[data-theme-btn]").forEach(b => b.classList.remove("active"));
+    btn.classList.add("active");
+  };
+});
+</script>
+</body>
+</html>

@@ -171,6 +171,23 @@
 
   .cta-area { margin-top: 18px; padding-top: 4px; }
 
+  /* AdMob banner (v1.0 — 메인 화면 하단 상시 배너 50dp) */
+  .ad-banner {
+    margin-top: 20px;
+    height: 50px;
+    background: var(--surface);
+    border: 1px dashed var(--border);
+    border-radius: 4px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 11px;
+    color: var(--textMuted);
+    font-family: ui-monospace, monospace;
+    letter-spacing: 0.5px;
+  }
+  .ad-banner-label { opacity: 0.7; }
+
   /* My page */
   .myp-back {
     display: inline-block; padding: 8px 0; font-size: 18px; cursor: pointer;
@@ -410,7 +427,7 @@ const screens = [
   { id: 0, name: "스플래시", desc: "앱 진입 1초 (Auth 토큰 확인 + 데이터 prefetch). 토큰 있으면 메인, 없으면 온보딩.", render: renderSplash },
   { id: 1, name: "온보딩 1 — 성별", desc: "최초 1회 (마이페이지에서 변경 가능). 성별만 받음 — 나이는 v1.5 옵션", render: renderOnboardingGender },
   { id: 2, name: "온보딩 2 — 위치 권한", desc: "GPS 권한 사전 안내 + 시스템 다이얼로그 트리거", render: renderOnboardingLocation },
-  { id: 3, name: "메인 ⭐", desc: "오늘 추천. 가장 자주 보는 화면. 헤더 + 무드 태그 + 4 아이템 카드 + CTA", render: renderMain },
+  { id: 3, name: "메인 ⭐", desc: "오늘 추천. 가장 자주 보는 화면. 헤더 + 무드 태그 + 4 아이템 카드 + CTA + AdMob 배너(v1.0, 하단 50dp 상시)", render: renderMain },
   { id: 4, name: "마이페이지", desc: "컬러 테마, 위치, 알림, 화면 모드, 계정, 정보. GPS 자동 토글로 권한 분기 dialog 시뮬레이션 (3 케이스)", render: renderMyPage },
   { id: 5, name: "도시 직접 선택", desc: "GPS 거부 시 또는 마이페이지에서 진입. SearchBar 자동완성 (src+name contains, prefix 우선) + prefill 8개 빈 상태. 230 entries 중 108개 mock seed", render: renderCitySelect },
   { id: 6, name: "에러 — 네트워크 없음", desc: "기상청·캐시 모두 실패 시 또는 네트워크 끊김", render: renderError },
@@ -516,6 +533,9 @@ function renderMain() {
     </div>
     <div class="cta-area">
       <button class="btn-primary" onclick="goto(4)">컬러 테마 변경 ▼</button>
+    </div>
+    <div class="ad-banner" title="AdMob 배너 50dp · v1.0 BM (상시 노출, 자체 refresh 60s)">
+      <span class="ad-banner-label">AdMob Banner · 50dp · v1.0</span>
     </div>
   </div>`;
 }

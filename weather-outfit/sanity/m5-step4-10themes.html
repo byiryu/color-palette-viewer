@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>weather-outfit M5 step-4 — 컬러 테마 10종 시각 점검</title>
+  <style>
+    :root {
+      --bg: #F8F5F0;
+      --surface: #FFFFFF;
+      --on-bg: #1A1A1A;
+      --on-surface-variant: #7A7468;
+      --outline: #E8E5E0;
+      --brand: #2C4E80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px 16px;
+      background: var(--bg);
+      color: var(--on-bg);
+      font-family: -apple-system, "Pretendard Variable", "Pretendard", sans-serif;
+      line-height: 1.5;
+    }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    h2 { font-size: 18px; margin: 24px 0 12px; color: var(--brand); }
+    .meta { color: var(--on-surface-variant); font-size: 14px; margin-bottom: 24px; }
+    .meta strong { color: var(--brand); }
+    .matrix-info {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .matrix-info h3 { margin: 0 0 8px; font-size: 14px; color: var(--brand); }
+    .matrix-info ul { margin: 0 0 12px; padding-left: 20px; }
+    .theme-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    .card .mode-label {
+      padding: 8px 12px;
+      font-size: 12px;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+      color: var(--on-surface-variant);
+      border-bottom: 1px solid var(--outline);
+      background: #FAFAF8;
+    }
+    .card .mode-label .light { color: #B89220; font-weight: 600; }
+    .card .mode-label .dark { color: #5A7AAA; font-weight: 600; }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--outline);
+      color: var(--on-surface-variant);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>weather-outfit — M5 step-4 컬러 테마 10종 시각 점검</h1>
+  <div class="meta">
+    <strong>10 테마 × 2 모드 = 20 캡쳐</strong> · Roborazzi JVM 자동 렌더 ·
+    M3.5 step-1 (ColorTheme enum + server `_shared/matrix.ts:THEME_IDS`) 정합 · 2026-05-17
+  </div>
+
+  <div class="matrix-info">
+    <h3>매트릭스</h3>
+    <ul>
+      <li><strong>10 테마</strong>: original / monochrome / pop / pastel / earth-tone / romantic / cool-street / marine / vintage / forest</li>
+      <li><strong>모드 2종</strong>: light (warm off-white 배경) / dark (warm dark 배경)</li>
+      <li>각 테마는 server matrix 의 대표 4 컬러 팔레트 모사 (실 server 응답과 미세 drift 가능, snapshot 목적은 클라 렌더링 검증)</li>
+    </ul>
+    <h3>통과 기준</h3>
+    <ul>
+      <li>각 테마 displayName (영문 음역, e.g. "쿨스트릿 (Cool Street)") moodTag 노출</li>
+      <li>4 컬러칩 hex 매트릭스 정합</li>
+      <li>Light/Dark 모두 시각 자연 (시맨틱 컬러 자동 페어링 — `color_7A7468` light ↔ `color_A89B8C` dark 등)</li>
+      <li>대비 비 4.5:1+ 가독성</li>
+    </ul>
+  </div>
+
+  <div id="grid"></div>
+
+  <div class="footer">
+    Auto-generated · weather-outfit-aos · M5 step-4 (10 테마 시각 점검)
+  </div>
+
+  <script>
+    const THEMES = [
+      { id: 'original', label: '오리지널 (Original)' },
+      { id: 'monochrome', label: '모노크롬 (Monochrome)' },
+      { id: 'pop', label: '팝 (Pop)' },
+      { id: 'pastel', label: '파스텔 (Pastel)' },
+      { id: 'earth_tone', label: '어스톤 (Earth-tone)' },
+      { id: 'romantic', label: '로맨틱 (Romantic)' },
+      { id: 'cool_street', label: '쿨스트릿 (Cool Street)' },
+      { id: 'marine', label: '마린 (Marine)' },
+      { id: 'vintage', label: '빈티지 (Vintage)' },
+      { id: 'forest', label: '포레스트 (Forest)' },
+    ];
+
+    const grid = document.getElementById('grid');
+    for (const theme of THEMES) {
+      const h2 = document.createElement('h2');
+      h2.textContent = theme.label;
+      grid.appendChild(h2);
+
+      const row = document.createElement('div');
+      row.className = 'theme-row';
+      row.innerHTML = `
+        <div class="card">
+          <div class="mode-label"><span class="light">LIGHT</span> · theme_${theme.id}_light.png</div>
+          <img src="m5-step4-10themes/theme_${theme.id}_light.png" alt="${theme.label} light" loading="lazy" />
+        </div>
+        <div class="card">
+          <div class="mode-label"><span class="dark">DARK</span> · theme_${theme.id}_dark.png</div>
+          <img src="m5-step4-10themes/theme_${theme.id}_dark.png" alt="${theme.label} dark" loading="lazy" />
+        </div>
+      `;
+      grid.appendChild(row);
+    }
+  </script>
+</body>
+</html>

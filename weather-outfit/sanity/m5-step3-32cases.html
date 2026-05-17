@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>weather-outfit M5 step-3 — 32 케이스 시각 점검</title>
+  <style>
+    :root {
+      --bg: #F8F5F0;
+      --surface: #FFFFFF;
+      --on-bg: #1A1A1A;
+      --on-surface-variant: #7A7468;
+      --outline: #E8E5E0;
+      --brand: #2C4E80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      padding: 32px 16px;
+      background: var(--bg);
+      color: var(--on-bg);
+      font-family: -apple-system, "Pretendard Variable", "Pretendard", sans-serif;
+      line-height: 1.5;
+    }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    .meta { color: var(--on-surface-variant); font-size: 14px; margin-bottom: 24px; }
+    .meta strong { color: var(--brand); }
+    .matrix-info {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: 12px;
+      padding: 16px;
+      margin-bottom: 24px;
+      font-size: 14px;
+    }
+    .matrix-info h2 { margin: 0 0 8px; font-size: 16px; }
+    .matrix-info ul { margin: 0; padding-left: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--outline);
+      border-radius: 12px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+    .card img {
+      width: 100%;
+      height: auto;
+      display: block;
+    }
+    .card .label {
+      padding: 8px 12px;
+      font-size: 12px;
+      color: var(--on-surface-variant);
+      border-top: 1px solid var(--outline);
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    .card .label .scheme { color: var(--brand); font-weight: 600; }
+    .footer {
+      margin-top: 32px;
+      padding-top: 16px;
+      border-top: 1px solid var(--outline);
+      color: var(--on-surface-variant);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>weather-outfit — M5 step-3 시각 점검</h1>
+  <div class="meta">
+    <strong>32 케이스</strong> (4 스킴 × 4 계절 × 2 강수) ·
+    Roborazzi JVM 자동 렌더 ·
+    AOS commit <code>feature/m5-step3-32cases-paparazzi</code> ·
+    2026-05-17
+  </div>
+
+  <div class="matrix-info">
+    <h2>매트릭스 + 통과 기준</h2>
+    <ul>
+      <li><strong>스킴 4종</strong>: monochrome / tone-on-tone / analogous / complementary (SCHEME_IDS 정합)</li>
+      <li><strong>계절 4종</strong>: spring / summer / autumn / winter</li>
+      <li><strong>강수 2종</strong>: clear (none) / rain</li>
+      <li><strong>변형 신호</strong>: <code>autumn × rain</code> + <code>summer × rain</code> = 8 케이스에서 <code>pm_grade='very_bad'</code> → AlertBar 노출 / <code>winter × clear</code> = 4 케이스에서 <code>isTomorrow=true</code> → TomorrowPrefix</li>
+    </ul>
+    <h2 style="margin-top: 16px;">통과 기준 (5)</h2>
+    <ul>
+      <li>4 컬러칩 hex 매트릭스 일치</li>
+      <li>옷종류 한글 노출 (외투/상의/하의/신발)</li>
+      <li>무드 태그 자유 텍스트 자연</li>
+      <li>AlertBar (pm_grade='very_bad') 분기 정상</li>
+      <li>체감 병기 표기 정상</li>
+    </ul>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    Auto-generated · weather-outfit-aos · M5 step-3 (32 케이스 시각 점검)
+  </div>
+
+  <script>
+    const SCHEMES = [
+      { id: 'monochrome', label: '모노크롬' },
+      { id: 'tone_on_tone', label: '톤온톤' },
+      { id: 'analogous', label: '유사색' },
+      { id: 'complementary', label: '보색' },
+    ];
+    const SEASONS = ['spring', 'summer', 'autumn', 'winter'];
+    const SEASON_KO = { spring: '봄', summer: '여름', autumn: '가을', winter: '겨울' };
+    const PRECIPS = ['clear', 'rain'];
+    const PRECIP_KO = { clear: '맑음', rain: '비' };
+
+    const grid = document.getElementById('grid');
+    for (const scheme of SCHEMES) {
+      for (const season of SEASONS) {
+        for (const precip of PRECIPS) {
+          const fileName = `main_${scheme.id}_${season}_${precip}.png`;
+          const card = document.createElement('div');
+          card.className = 'card';
+          card.innerHTML = `
+            <img src="m5-step3-32cases/${fileName}" alt="${fileName}" loading="lazy" />
+            <div class="label">
+              <span class="scheme">${scheme.label}</span> · ${SEASON_KO[season]} · ${PRECIP_KO[precip]}
+            </div>
+          `;
+          grid.appendChild(card);
+        }
+      }
+    }
+  </script>
+</body>
+</html>

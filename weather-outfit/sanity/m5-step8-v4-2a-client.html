@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>weather-outfit M5 step-8 — V4-2a 골든 8 케이스 클라 회귀</title>
+  <style>
+    :root {
+      --bg: #F8F5F0; --surface: #FFFFFF; --on-bg: #1A1A1A;
+      --on-surface-variant: #7A7468; --outline: #E8E5E0; --brand: #2C4E80;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; padding: 32px 16px;
+      background: var(--bg); color: var(--on-bg);
+      font-family: -apple-system, "Pretendard Variable", "Pretendard", sans-serif;
+      line-height: 1.5;
+    }
+    h1 { font-size: 24px; margin: 0 0 8px; }
+    .meta { color: var(--on-surface-variant); font-size: 14px; margin-bottom: 24px; }
+    .meta strong { color: var(--brand); }
+    .matrix-info {
+      background: var(--surface); border: 1px solid var(--outline); border-radius: 12px;
+      padding: 16px; margin-bottom: 24px; font-size: 14px;
+    }
+    .matrix-info h2 { margin: 0 0 8px; font-size: 16px; }
+    .matrix-info ul { margin: 0 0 12px; padding-left: 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+      gap: 16px;
+    }
+    .card {
+      background: var(--surface); border: 1px solid var(--outline);
+      border-radius: 12px; overflow: hidden;
+    }
+    .card .meta-label {
+      padding: 8px 12px; font-size: 12px;
+      color: var(--on-surface-variant);
+      border-bottom: 1px solid var(--outline);
+      background: #FAFAF8;
+      font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    }
+    .card .meta-label .case-id { color: var(--brand); font-weight: 600; }
+    .card img { width: 100%; height: auto; display: block; }
+    .source-link {
+      display: inline-block; margin-top: 8px;
+      padding: 6px 12px; background: var(--brand); color: white;
+      text-decoration: none; border-radius: 6px; font-size: 13px;
+    }
+    .footer {
+      margin-top: 32px; padding-top: 16px;
+      border-top: 1px solid var(--outline);
+      color: var(--on-surface-variant); font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+  <h1>weather-outfit — M5 step-8 V4-2a 골든 8 케이스 클라 회귀</h1>
+  <div class="meta">
+    <strong>8 케이스</strong> · server V4-2a sanity (Opus 4.7 surrogate, 2026-05-10 PASS) 골든 응답 ↔
+    클라 메인 화면 UI 1:1 정합 검증 · Roborazzi 자동 렌더 · 2026-05-18
+  </div>
+
+  <div class="matrix-info">
+    <h2>입력 매트릭스 (server v4_2b_cases.ts case_id 1~8)</h2>
+    <ul>
+      <li><strong>case 1-2</strong>: 봄 18°C 맑음 · M/F · original</li>
+      <li><strong>case 3-4</strong>: 여름 26°C 비 · M/F · original/pastel</li>
+      <li><strong>case 5-6</strong>: 가을 14°C 흐림 · M/F · monochrome/pop</li>
+      <li><strong>case 7-8</strong>: 겨울 -2°C 맑음 · M/F · cyberpunk*/original · pm bad</li>
+    </ul>
+    <h2>비교 대상</h2>
+    <p>
+      골든 원본 (Opus surrogate):
+      <a class="source-link" href="v4-2a.html" target="_blank">v4-2a.html 보기 →</a>
+    </p>
+    <h2>발견된 drift (예상 범위, v1.0 영향 0)</h2>
+    <ul>
+      <li><strong>case 7 user.theme="cyberpunk"</strong>: M3.5 step-1 에서 drop 된 옛 라인업 (10 테마 final 에 없음). server 응답에 미반영이라 클라 UI 영향 X.</li>
+      <li><strong>scheme="base-accent" / "complement"</strong>: 현재 server <code>SCHEME_IDS</code> 정합 여부 불명확. 클라는 <code>schemeLabel</code> 텍스트만 사용 → 영향 X.</li>
+      <li><strong>pm_grade="bad"</strong> (case 7/8): 현재 클라는 <code>very_bad</code> 만 AlertBar 분기. <code>bad</code> 는 헤더 텍스트만 — 의도 정합.</li>
+    </ul>
+  </div>
+
+  <div class="grid" id="grid"></div>
+
+  <div class="footer">
+    Auto-generated · weather-outfit-aos · M5 step-8 (V4-2a 골든 8 클라 회귀)
+  </div>
+
+  <script>
+    const CASES = [
+      { id: 1, file: "v4_2a_01_spring_m_original", label: "봄 18°C 맑음 · M · original → 톤온톤" },
+      { id: 2, file: "v4_2a_02_spring_f_original", label: "봄 18°C 맑음 · F · original → 베이스+포인트" },
+      { id: 3, file: "v4_2a_03_summer_rain_m_original", label: "여름 26°C 비 · M · original → 톤온톤" },
+      { id: 4, file: "v4_2a_04_summer_rain_f_pastel", label: "여름 26°C 비 · F · pastel → 모노크롬" },
+      { id: 5, file: "v4_2a_05_autumn_cloudy_m_mono", label: "가을 14°C 흐림 · M · monochrome → 톤온톤" },
+      { id: 6, file: "v4_2a_06_autumn_cloudy_f_pop", label: "가을 14°C 흐림 · F · pop → 베이스+포인트" },
+      { id: 7, file: "v4_2a_07_winter_m_cyberpunk_pm_bad", label: "겨울 -2°C 맑음 · M · cyberpunk* · pm bad → 보색대비" },
+      { id: 8, file: "v4_2a_08_winter_f_original_pm_bad", label: "겨울 -2°C 맑음 · F · original · pm bad → 톤온톤" },
+    ];
+
+    const grid = document.getElementById('grid');
+    for (const c of CASES) {
+      const card = document.createElement('div');
+      card.className = 'card';
+      card.innerHTML = `
+        <div class="meta-label">
+          <span class="case-id">CASE ${c.id}</span> · ${c.label}
+        </div>
+        <img src="m5-step8-v4-2a-client/${c.file}.png" alt="${c.label}" loading="lazy" />
+      `;
+      grid.appendChild(card);
+    }
+  </script>
+</body>
+</html>

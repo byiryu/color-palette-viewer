@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PALETI — 검증 자료 (Sanity)</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, "Pretendard", "Segoe UI", Roboto, sans-serif;
+    background: #f8f5f0;
+    color: #1a1a1a;
+    line-height: 1.5;
+    padding: 32px 24px;
+    min-height: 100vh;
+  }
+  .container { max-width: 880px; margin: 0 auto; }
+  .breadcrumb { font-size: 13px; color: #7a7468; margin-bottom: 12px; }
+  .breadcrumb a { color: #2c4e80; text-decoration: none; }
+  .breadcrumb a:hover { text-decoration: underline; }
+
+  header { margin-bottom: 28px; }
+  h1 { font-size: 28px; margin-bottom: 6px; letter-spacing: -0.4px; }
+  .tagline { color: #7a7468; font-size: 15px; }
+
+  h2 {
+    font-size: 16px;
+    color: #555;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin: 32px 0 14px;
+    border-bottom: 1px solid #e8e5e0;
+    padding-bottom: 8px;
+  }
+
+  .cards { display: grid; grid-template-columns: 1fr; gap: 12px; }
+  @media (min-width: 720px) { .cards { grid-template-columns: 1fr 1fr; } }
+
+  .card {
+    background: #fff;
+    border: 1px solid #e8e5e0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    transition: all 0.15s;
+    text-decoration: none;
+    color: inherit;
+    display: block;
+  }
+  .card:hover { border-color: #2c4e80; transform: translateY(-1px); box-shadow: 0 4px 12px rgba(0,0,0,0.04); }
+  .card-step {
+    font-size: 11px;
+    color: #2c4e80;
+    font-family: ui-monospace, "SF Mono", monospace;
+    font-weight: 600;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+  .card-title { font-size: 16px; font-weight: 700; margin-bottom: 6px; }
+  .card-meta { font-size: 12px; color: #888; }
+
+  .empty {
+    background: #fff;
+    border: 1px dashed #e8e5e0;
+    border-radius: 14px;
+    padding: 18px 20px;
+    color: #888;
+    font-style: italic;
+    font-size: 13px;
+  }
+
+  footer { margin-top: 48px; padding-top: 16px; border-top: 1px solid #e8e5e0; color: #888; font-size: 12px; }
+  footer a { color: #2c4e80; text-decoration: none; }
+  footer a:hover { text-decoration: underline; }
+</style>
+</head>
+<body>
+<div class="container">
+  <div class="breadcrumb">
+    <a href="../../index.html">byiryu studio</a> · PALETI · Sanity
+  </div>
+
+  <header>
+    <h1>PALETI — 검증 자료</h1>
+    <p class="tagline">의사결정 흔적 · Roborazzi 자동 렌더 시각 점검 · 항상 공개</p>
+  </header>
+
+  <h2>M5 — QA &amp; 시각 회귀</h2>
+  <div class="cards">
+    <a class="card" href="m5-step8-v4-2a-client.html">
+      <div class="card-step">M5 · step-8</div>
+      <div class="card-title">V4-2a 골든 8 케이스 (클라 회귀)</div>
+      <div class="card-meta">봄/여름/가을/겨울 × M/F · scheme + pm_grade 정합 · 8 캡쳐</div>
+    </a>
+
+    <a class="card" href="m5-step4-10themes.html">
+      <div class="card-step">M5 · step-4</div>
+      <div class="card-title">10 컬러 테마 × Light/Dark</div>
+      <div class="card-meta">original / monochrome / pop / pastel / earth-tone / romantic / cool-street / marine / vintage / forest · 20 캡쳐</div>
+    </a>
+
+    <a class="card" href="m5-step3-32cases.html">
+      <div class="card-step">M5 · step-3</div>
+      <div class="card-title">핵심 32 케이스 시각 점검</div>
+      <div class="card-meta">4 scheme × 4 season × 2 weather · 32 캡쳐</div>
+    </a>
+  </div>
+
+  <h2>Design — 디자인 시안</h2>
+  <div class="empty">v1.0 출시 후 디자인 시안 (와이어프레임 · 컬러 팔레트 · 아이콘 후보) 공개 예정.</div>
+
+  <footer>
+    <p>← <a href="../../index.html">byiryu studio Previews</a> 목록으로 돌아가기</p>
+  </footer>
+</div>
+</body>
+</html>
